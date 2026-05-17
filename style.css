@@ -1,0 +1,600 @@
+/* ── CSS VARIABLES ───────────────────────────────────────────── */
+:root {
+    --wood-dark: #2C1A0E;
+    --wood-mid: #6B3A1F;
+    --wood-warm: #A0522D;
+    --wood-light: #D4956A;
+    --cream: #FAF5EE;
+    --cream-deep: #F0E6D3;
+    --gold: #C9922A;
+    --gold-light: #E8B96A;
+    --ink: #1A1008;
+    --muted: #8C6B4F;
+    --white: #FFFDF9;
+    --border: #D9C4A8;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+    background-image:
+        radial-gradient(ellipse at 10% 20%, rgba(107, 58, 31, 0.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 90% 80%, rgba(201, 146, 42, 0.08) 0%, transparent 50%);
+}
+
+/* ── HEADER ─────────────────────────────────────────────── */
+header {
+    background: var(--wood-dark);
+    background-image: repeating-linear-gradient(90deg,
+            transparent 0px,
+            transparent 38px,
+            rgba(255, 255, 255, 0.015) 38px,
+            rgba(255, 255, 255, 0.015) 40px);
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(201, 146, 42, 0.15) 0%, transparent 60%);
+}
+
+.header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 36px 40px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    z-index: 1;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.brand-icon {
+    width: 64px;
+    height: 64px;
+    background: var(--gold);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    box-shadow: 0 4px 20px rgba(201, 146, 42, 0.4);
+}
+
+.brand-text h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--cream);
+    letter-spacing: 0.5px;
+    line-height: 1.1;
+}
+
+.brand-text p {
+    font-size: 0.78rem;
+    color: var(--gold-light);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 3px;
+}
+
+.header-meta {
+    text-align: right;
+}
+
+.header-meta p {
+    font-size: 0.82rem;
+    color: rgba(250, 245, 238, 0.65);
+    line-height: 1.7;
+}
+
+.header-meta strong {
+    color: var(--gold-light);
+}
+
+/* ── INVOICE TAG ─────────────────────────────────────────── */
+.invoice-tag-bar {
+    background: var(--gold);
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 10px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.invoice-tag-bar span {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--wood-dark);
+}
+
+#invoice-number-display {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: var(--wood-dark);
+    font-weight: 700;
+}
+
+/* ── MAIN ────────────────────────────────────────────────── */
+main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 40px 60px;
+}
+
+/* ── CUSTOMER SECTION ────────────────────────────────────── */
+.section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--wood-mid);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+}
+
+.customer-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 36px;
+}
+
+@media (max-width: 700px) {
+    .customer-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .header-inner {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+    }
+
+    .header-meta {
+        text-align: center;
+    }
+}
+
+label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+}
+
+input,
+select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    background: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.92rem;
+    color: var(--ink);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+}
+
+input:focus,
+select:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(201, 146, 42, 0.12);
+}
+
+/* ── ITEMS TABLE ─────────────────────────────────────────── */
+.table-wrapper {
+    background: var(--white);
+    border-radius: 12px;
+    border: 1.5px solid var(--border);
+    overflow: hidden;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 16px rgba(44, 26, 14, 0.06);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead tr {
+    background: var(--wood-dark);
+}
+
+thead th {
+    padding: 13px 16px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    text-align: left;
+}
+
+thead th:last-child {
+    text-align: right;
+}
+
+thead th.num {
+    text-align: right;
+}
+
+tbody tr {
+    border-bottom: 1px solid var(--cream-deep);
+    transition: background 0.15s;
+}
+
+tbody tr:hover {
+    background: rgba(212, 149, 106, 0.05);
+}
+
+tbody tr:last-child {
+    border-bottom: none;
+}
+
+tbody td {
+    padding: 10px 8px;
+    vertical-align: middle;
+}
+
+tbody td input {
+    border: 1px solid transparent;
+    background: transparent;
+    padding: 7px 10px;
+    border-radius: 4px;
+}
+
+tbody td input:focus {
+    border-color: var(--gold);
+    background: var(--white);
+    box-shadow: 0 0 0 2px rgba(201, 146, 42, 0.1);
+}
+
+tbody td select {
+    border: 1px solid transparent;
+    background: transparent;
+    padding: 7px 10px;
+    border-radius: 4px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    color: var(--ink);
+    cursor: pointer;
+    appearance: auto;
+}
+
+tbody td select:focus {
+    border-color: var(--gold);
+    background: var(--white);
+    box-shadow: 0 0 0 2px rgba(201, 146, 42, 0.1);
+    outline: none;
+}
+
+tbody td.row-num {
+    width: 44px;
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-weight: 600;
+}
+
+tbody td.total-cell {
+    text-align: right;
+    font-weight: 600;
+    color: var(--wood-mid);
+    padding-right: 16px;
+    font-size: 0.94rem;
+}
+
+tbody td.del-cell {
+    width: 44px;
+    text-align: center;
+}
+
+.del-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #C0A090;
+    font-size: 1.1rem;
+    padding: 4px 6px;
+    border-radius: 4px;
+    transition: color 0.15s, background 0.15s;
+}
+
+.del-btn:hover {
+    color: #b03030;
+    background: #fdf0f0;
+}
+
+/* ── TABLE FOOTER ROW ────────────────────────────────────── */
+tfoot tr td {
+    padding: 10px 16px;
+    border-top: 2px solid var(--border);
+    background: var(--cream-deep);
+}
+
+.add-row-btn {
+    background: none;
+    border: 1.5px dashed var(--gold);
+    color: var(--gold);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 8px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: background 0.15s, color 0.15s;
+}
+
+.add-row-btn:hover {
+    background: var(--gold);
+    color: var(--wood-dark);
+}
+
+/* ── TOTALS BOX ──────────────────────────────────────────── */
+.totals-area {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 36px;
+}
+
+.totals-box {
+    background: var(--wood-dark);
+    border-radius: 12px;
+    padding: 24px 32px;
+    min-width: 320px;
+    box-shadow: 0 4px 24px rgba(44, 26, 14, 0.15);
+}
+
+.totals-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 0.88rem;
+}
+
+.totals-row:last-child {
+    border-bottom: none;
+}
+
+.totals-row span:first-child {
+    color: rgba(250, 245, 238, 0.6);
+}
+
+.totals-row span:last-child {
+    color: var(--cream);
+    font-weight: 500;
+}
+
+.totals-grand {
+    margin-top: 12px;
+    padding-top: 14px;
+    border-top: 1.5px solid var(--gold) !important;
+}
+
+.totals-grand span:first-child {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem !important;
+    color: var(--gold-light) !important;
+}
+
+.totals-grand span:last-child {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.35rem !important;
+    color: var(--gold) !important;
+    font-weight: 700 !important;
+}
+
+/* ── SIGNATURE ───────────────────────────────────────────── */
+.signature-area {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin: 48px 0 36px;
+    padding: 0 8px;
+}
+
+.sig-left,
+.sig-right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    min-width: 200px;
+}
+
+.sig-line {
+    width: 200px;
+    height: 1.5px;
+    background: var(--wood-mid);
+}
+
+.sig-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+/* ── ACTIONS ─────────────────────────────────────────────── */
+.actions {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.btn-primary {
+    background: var(--gold);
+    color: var(--wood-dark);
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 0.88rem;
+    padding: 12px 28px;
+    border-radius: 8px;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 2px 12px rgba(201, 146, 42, 0.3);
+}
+
+.btn-primary:hover {
+    background: var(--gold-light);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 18px rgba(201, 146, 42, 0.4);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--wood-mid);
+    border: 1.5px solid var(--border);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: 0.88rem;
+    padding: 12px 28px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+
+.btn-secondary:hover {
+    border-color: var(--wood-warm);
+    color: var(--wood-dark);
+    background: var(--cream-deep);
+}
+
+/* ── NOTES ───────────────────────────────────────────────── */
+.notes-area {
+    margin-top: 36px;
+}
+
+textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    background: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    color: var(--ink);
+    resize: vertical;
+    min-height: 80px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+textarea:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(201, 146, 42, 0.1);
+}
+
+/* ── FOOTER ──────────────────────────────────────────────── */
+footer {
+    background: var(--wood-dark);
+    color: rgba(250, 245, 238, 0.45);
+    text-align: center;
+    padding: 18px;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+}
+
+/* ── PRINT / PDF ─────────────────────────────────────────── */
+@media print {
+    body {
+        background: white !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    /* Hide interactive UI elements */
+    .actions,
+    .add-row-btn,
+    .del-btn,
+    .del-cell,
+    .notes-area {
+        display: none !important;
+    }
+
+    /* Show customer fields as plain readable text */
+    input[type="text"],
+    input[type="tel"],
+    input[type="date"],
+    input[type="number"] {
+        border: none !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        font-size: 0.92rem !important;
+        color: var(--ink) !important;
+        -webkit-appearance: none;
+        appearance: none;
+    }
+
+    select {
+        border: none !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        font-size: 0.92rem !important;
+        color: var(--ink) !important;
+        -webkit-appearance: none;
+        appearance: none;
+    }
+
+    header,
+    thead tr,
+    .totals-box,
+    .invoice-tag-bar {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    main {
+        padding: 24px 32px 40px !important;
+    }
+
+    .table-wrapper {
+        box-shadow: none !important;
+    }
+
+    /* Remove last column (delete) space */
+    thead th:last-child {
+        display: none;
+    }
+}
