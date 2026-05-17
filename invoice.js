@@ -17,7 +17,7 @@ function removeRow(/** @type {number} */ id) {
 }
 
 function getTotalQty(/** @type {typeof items[0]} */ item) {
-    return item.qty * item.rate;
+    return item.qty;
 }
 
 function render() {
@@ -65,7 +65,7 @@ function render() {
           oninput="updateField(${item.id},'rate',+this.value)"
           style="text-align:right;" />
       </td>
-      <td class="total-cell">${total > 0 ? formatINR(total) : '—'}</td>
+      <td class="total-cell">${total > 0 ? total.toLocaleString('en-IN') : '—'}</td>
       <td class="del-cell">
         <button class="del-btn" onclick="removeRow(${item.id})" title="Remove row">✕</button>
       </td>
@@ -102,7 +102,7 @@ function updateField(/** @type {number} */ id, /** @type {string} */ field, /** 
     if (rows[idx]) {
         const cell = rows[idx].querySelector('.total-cell');
         const t = getTotalQty(item);
-        if (cell) cell.textContent = t > 0 ? formatINR(t) : '—';
+        if (cell) cell.textContent = t > 0 ? t.toLocaleString('en-IN') : '—';
     }
     updateTotal();
 }
@@ -110,7 +110,7 @@ function updateField(/** @type {number} */ id, /** @type {string} */ field, /** 
 function updateTotal() {
     const grand = items.reduce((s, i) => s + getTotalQty(i), 0);
     const el = document.getElementById('grand-total');
-    if (el) el.textContent = formatINR(grand);
+    if (el) el.textContent = grand.toLocaleString('en-IN');
 }
 
 function updateInvoiceNumber(/** @type {string} */ val) {
