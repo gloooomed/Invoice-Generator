@@ -168,19 +168,208 @@ main {
     margin-bottom: 36px;
 }
 
-@media (max-width: 700px) {
-    .customer-grid {
-        grid-template-columns: 1fr;
+/* ── RESPONSIVE ──────────────────────────────────────────── */
+
+/* Tablet */
+@media (max-width: 768px) {
+    .header-inner {
+        padding: 24px 20px 20px;
     }
 
+    main {
+        padding: 24px 20px 48px;
+    }
+
+    .invoice-tag-bar {
+        padding: 10px 20px;
+    }
+
+    .customer-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .signature-area {
+        margin: 32px 0 24px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+
+    /* Header stacks vertically */
     .header-inner {
         flex-direction: column;
+        align-items: flex-start;
         gap: 16px;
-        text-align: center;
+        padding: 20px 16px 18px;
+    }
+
+    .brand-text h1 {
+        font-size: 1.4rem;
+    }
+
+    .brand-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 22px;
     }
 
     .header-meta {
+        text-align: left;
+        width: 100%;
+        border-top: 1px solid rgba(255,255,255,0.1);
+        padding-top: 12px;
+    }
+
+    .header-meta p {
+        font-size: 0.8rem;
+        line-height: 1.8;
+    }
+
+    /* Invoice tag bar */
+    .invoice-tag-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+        padding: 10px 16px;
+    }
+
+    .invoice-tag-bar span {
+        letter-spacing: 1.5px;
+        font-size: 0.7rem;
+    }
+
+    /* Main padding */
+    main {
+        padding: 20px 12px 40px;
+    }
+
+    /* Bill To — single column */
+    .customer-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+
+    /* Inputs — larger tap targets */
+    input,
+    select {
+        padding: 12px 14px;
+        font-size: 1rem;
+    }
+
+    /* ── TABLE → CARD LAYOUT on mobile ── */
+    .table-wrapper {
+        overflow-x: visible;
+        border-radius: 8px;
+    }
+
+    /* Hide desktop table header */
+    #items-table thead {
+        display: none;
+    }
+
+    /* Each row becomes a card */
+    #items-table tbody tr {
+        display: block;
+        border: 1.5px solid var(--border);
+        border-radius: 8px;
+        margin-bottom: 10px;
+        padding: 12px;
+        background: var(--white);
+        box-shadow: 0 1px 6px rgba(44,26,14,0.06);
+    }
+
+    /* Each cell becomes a labelled row */
+    #items-table tbody td {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 6px 0;
+        border-bottom: 1px solid var(--cream-deep);
+    }
+
+    #items-table tbody td:last-child {
+        border-bottom: none;
+    }
+
+    /* Data-label as the field name */
+    #items-table tbody td::before {
+        content: attr(data-label);
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        color: var(--muted);
+        flex-shrink: 0;
+        margin-right: 10px;
+    }
+
+    #items-table tbody td input,
+    #items-table tbody td select {
+        text-align: right;
+        flex: 1;
+        max-width: 55%;
+        font-size: 0.95rem;
+    }
+
+    #items-table tbody td.total-cell {
+        font-size: 1rem;
+        color: var(--wood-mid);
+        font-weight: 700;
+        padding-right: 0;
+    }
+
+    #items-table tbody td.del-cell {
+        justify-content: flex-end;
+        border-bottom: none;
+        padding-top: 4px;
+    }
+
+    /* tfoot */
+    #items-table tfoot tr {
+        display: block;
+    }
+
+    #items-table tfoot td {
+        display: block;
+    }
+
+    #items-table tfoot #total-row td {
+        display: block;
+        text-align: right;
+    }
+
+    /* Signature — stack on mobile */
+    .signature-area {
+        flex-direction: column;
+        align-items: center;
+        gap: 32px;
+        margin: 28px 0 20px;
+    }
+
+    .sig-left,
+    .sig-right {
+        min-width: 0;
+        width: 100%;
+        max-width: 260px;
+    }
+
+    .sig-line {
+        width: 100%;
+    }
+
+    /* Buttons — full width */
+    .actions {
+        flex-direction: column;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        width: 100%;
         text-align: center;
+        padding: 14px;
+        font-size: 0.95rem;
     }
 }
 
