@@ -1,92 +1,92 @@
-# 🪵 Suproan Invoice Generator
+# Suproan Invoice Generator
 
-A clean, lightweight, browser-based **tax invoice generator** for **Suproan Enterprises** — a premium plywood & board supplier based in Darbhanga, Bihar.
-
-No backend. No dependencies. Just open `index.html` and start billing.
+A lightweight, browser-based tax invoice generator built for **Suproan Enterprises**, a premium plywood and board supplier based in Darbhanga, Bihar. The application runs entirely in the browser with no backend, no dependencies, and no build process required.
 
 ---
 
-## ✨ Features
+## Features
 
-- 📋 **Quick Billing** — Fill in customer name, invoice number, and date
-- 📦 **Item Management** — Add/remove rows with size selection (preset sizes + custom)
-- 🧮 **Auto Calculation** — Total amount calculated automatically per row and overall
-- 🖨️ **Print Invoice** — Clean, print-ready layout hides all UI controls
-- ⬇️ **Download as PDF** — Saves with a smart filename like `INV-2026-001_Raj Constructions.pdf`
-- 🗑️ **Clear All** — Reset the invoice with one click
-- 📱 **Responsive** — Works on desktop and mobile browsers
+- Fill in customer name, invoice number, and date in a clean billing form
+- Add and remove line items with a dropdown of preset plywood sizes plus a custom entry option
+- Automatically calculates the total quantity per row and the overall grand total
+- Download the invoice as a PDF directly from the browser with a pre-filled filename
+- Fully responsive layout that works on desktop, tablet, and mobile devices
+- Clear All button to reset the invoice for the next customer
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 suproan-invoice/
-├── index.html      # Main HTML structure
-├── style.css       # All styles, layout & print/PDF media query
-├── invoice.js      # JavaScript logic (rendering, totals, PDF export)
-└── README.md       # This file
+├── index.html      — HTML markup and page structure
+├── style.css       — Stylesheet including responsive breakpoints and print styles
+├── invoice.js      — Application logic: rendering, totals, PDF export
+└── README.md       — Project documentation
 ```
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
-1. **Clone or download** the repository
-2. **Open** `index.html` in any modern browser (Chrome, Edge, Firefox)
-3. Fill in the invoice details and items
-4. Click **⬇ Download PDF** to save or **🖨 Print Invoice** to print
+1. Clone or download the repository.
+2. Open `index.html` in any modern browser (Chrome, Edge, or Firefox recommended).
+3. Fill in the invoice details and add items.
+4. Click **Download PDF** to save the invoice.
 
-> No installation, no npm, no build step required.
+No installation, package manager, or build step is required.
 
 ---
 
-## 🧾 How to Use
+## Usage
 
 | Step | Action |
 |------|--------|
-| 1 | Enter **Customer Name**, **Invoice No.**, and **Invoice Date** |
-| 2 | Click **+ Add Row** to add plywood items |
-| 3 | Select a **size** from the dropdown (or choose *Custom…*) |
-| 4 | Enter **Quantity** and **Rate (₹)** — total is calculated automatically |
-| 5 | Click **⬇ Download PDF** → choose *Save as PDF* in the print dialog |
+| 1 | Enter the customer name, invoice number, and invoice date in the Bill To section |
+| 2 | Click **Add Row** to add a plywood line item |
+| 3 | Select a size from the dropdown or choose **Custom** to enter a size manually |
+| 4 | Enter the quantity and rate — the total quantity is calculated automatically |
+| 5 | Click **Download PDF** and choose **Save as PDF** in the browser print dialog |
 
 ---
 
-## 📐 Supported Plywood Sizes
+## Supported Plywood Sizes
 
-Preset sizes include:
+The following sizes are available in the size dropdown:
 
-- **84\*** — 84×42, 84×40, 84×38, 84×36, 84×34, 84×32
-- **81\*** — 81×42, 81×40, 81×38, 81×36, 81×34, 81×32
-- **78\*** — 78×38, 78×36, 78×34, 78×32, 78×30
-- **Custom** — Enter any size manually
-
----
-
-## 🏢 Business Details
-
-| Field | Value |
-|-------|-------|
-| **Company** | Suproan Enterprises |
-| **Type** | Premium Plywood & Board Suppliers |
-| **Address** | C/O - Suproan Enterprises, Donar Industrial Area, Darbhanga – 864009 |
-| **Email** | info@suproanenterprises.com |
+| Series | Available Sizes |
+|--------|-----------------|
+| 84     | 84×42, 84×40, 84×38, 84×36, 84×34, 84×32 |
+| 81     | 81×42, 81×40, 81×38, 81×36, 81×34, 81×32 |
+| 78     | 78×38, 78×36, 78×34, 78×32, 78×30 |
+| Custom | Any size entered manually |
 
 ---
 
-## 🛠️ Tech Stack
+## Business Information
 
-| Technology | Usage |
-|------------|-------|
-| HTML5 | Page structure & semantic markup |
-| CSS3 | Styling, layout, responsive design, print styles |
-| Vanilla JavaScript | Invoice logic, DOM manipulation, PDF export |
-| Google Fonts | Playfair Display & DM Sans |
+| Field   | Details |
+|---------|---------|
+| Company | Suproan Enterprises |
+| Type    | Premium Plywood and Board Suppliers |
+| Address | C/O Suproan Enterprises, Donar Industrial Area, Darbhanga – 864009 |
+| Phone   | 8294150110 / 7992315783 |
+| Email   | info@suproanenterprises.com |
 
 ---
 
-## 📄 License
+## Technology Stack
 
-This project is for internal business use by **Suproan Enterprises**.  
-© 2026 Suproan Enterprises · All Rights Reserved.
+| Technology | Purpose |
+|------------|---------|
+| HTML5 | Page structure and semantic markup |
+| CSS3 | Styling, responsive layout, and print media styles |
+| Vanilla JavaScript | Invoice logic, DOM rendering, and PDF export |
+| Google Fonts | Playfair Display and DM Sans typefaces |
+
+---
+
+## License
+
+This project is intended for internal business use by Suproan Enterprises.  
+© 2026 Suproan Enterprises. All Rights Reserved.
