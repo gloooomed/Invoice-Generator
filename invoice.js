@@ -45,7 +45,7 @@ function render() {
         const isCustom = item.size !== '' && !sizes.includes(item.size);
 
         tr.innerHTML = `
-      <td style="min-width:200px;">
+      <td data-label="Size" style="min-width:200px;">
         <select onchange="handleSizeSelect(${item.id}, this.value)" style="width:100%; margin-bottom:${isCustom ? '6px' : '0'};">
           <option value="" ${item.size === '' ? 'selected' : ''}>— Select Size —</option>
           ${optionsHtml}
@@ -55,18 +55,18 @@ function render() {
           oninput="updateField(${item.id},'size',this.value)"
           style="width:100%; margin-top:4px;" />` : ''}
       </td>
-      <td>
+      <td data-label="Quantity">
         <input type="number" value="${item.qty || ''}" min="0" placeholder="0"
           oninput="updateField(${item.id},'qty',+this.value)"
           style="text-align:right;" />
       </td>
-      <td>
+      <td data-label="Rate (₹)">
         <input type="number" value="${item.rate || ''}" min="0" placeholder="0"
           oninput="updateField(${item.id},'rate',+this.value)"
           style="text-align:right;" />
       </td>
-      <td class="total-cell">${total > 0 ? total.toLocaleString('en-IN') : '—'}</td>
-      <td class="del-cell">
+      <td class="total-cell" data-label="Total Qty">${total > 0 ? total.toLocaleString('en-IN') : '—'}</td>
+      <td class="del-cell" data-label="">
         <button class="del-btn" onclick="removeRow(${item.id})" title="Remove row">✕</button>
       </td>
     `;
