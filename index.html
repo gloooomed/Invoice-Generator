@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Suproan Enterprises – Invoice</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <div class="header-inner">
+            <div class="brand">
+                <div class="brand-icon">🪵</div>
+                <div class="brand-text">
+                    <h1>Suproan Enterprises</h1>
+                    <p>Premium Plywood &amp; Board Suppliers</p>
+                </div>
+            </div>
+            <div class="header-meta">
+                <p>C/O - Suproan Enterprises</p>
+                <p>Donar Industrial Area</p>
+                <p>Darbhanga – 864009</p>
+                <p>📞 +91 98XXX XXXXX</p>
+                <p>✉ info@suproanenterprises.com</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- INVOICE TAG BAR -->
+    <div style="background:var(--wood-mid); max-width:1100px; margin:0 auto;">
+        <div class="invoice-tag-bar">
+            <span>Tax Invoice</span>
+            <span id="invoice-number-display">INV-2026-001</span>
+            <span id="invoice-date-display"></span>
+        </div>
+    </div>
+
+    <main>
+
+        <!-- CUSTOMER INFO -->
+        <div class="section-title">Bill To</div>
+        <div class="customer-grid">
+            <div>
+                <label>Customer Name</label>
+                <input type="text" id="cust-name" placeholder="e.g. Raj Constructions" />
+            </div>
+            <div>
+                <label>Invoice No.</label>
+                <input type="text" id="invoice-no" value="INV-2026-001" oninput="updateInvoiceNumber(this.value)" />
+            </div>
+            <div>
+                <label>Invoice Date</label>
+                <input type="date" id="invoice-date" />
+            </div>
+        </div>
+
+        <!-- ITEMS TABLE -->
+        <div class="section-title">Items</div>
+        <div class="table-wrapper">
+            <table id="items-table">
+                <thead>
+                    <tr>
+                        <th>Size</th>
+                        <th class="num">Quantity</th>
+                        <th class="num">Rate (₹)</th>
+                        <th class="num">Total Quantity (₹)</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="items-body">
+                    <!-- rows injected by JS -->
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="5" style="padding:10px 16px;">
+                            <button class="add-row-btn" onclick="addRow()">+ Add Row</button>
+                        </td>
+                    </tr>
+                    <tr id="total-row">
+                        <td colspan="3" style="padding:10px 16px; background:var(--cream-deep);"></td>
+                        <td
+                            style="padding:10px 20px; background:var(--cream-deep); text-align:right; font-family:'Playfair Display',serif; font-size:1rem; font-weight:700; color:var(--wood-dark); border-top:2px solid var(--border);">
+                            Total = <span id="grand-total">₹ 0.00</span>
+                        </td>
+                        <td style="background:var(--cream-deep);"></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <!-- SIGNATURE LINE -->
+        <div class="signature-area">
+            <div class="sig-left">
+                <div class="sig-line"></div>
+                <p class="sig-label">Received By</p>
+            </div>
+            <div class="sig-right">
+                <div class="sig-line"></div>
+                <p class="sig-label">Signature &amp; Stamp</p>
+            </div>
+        </div>
+
+        <!-- NOTES -->
+        <div class="notes-area">
+            <div class="section-title">Terms &amp; Notes</div>
+            <textarea id="notes"
+                placeholder="e.g. Payment due within 15 days. Goods once sold will not be taken back. Subject to Patna jurisdiction.">Payment due within 15 days. Goods once sold will not be taken back. Subject to Patna jurisdiction.</textarea>
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="actions" style="margin-top:28px;">
+            <button class="btn-primary" id="btn-print" onclick="window.print()">🖨 Print Invoice</button>
+            <button class="btn-primary" id="btn-download-pdf" onclick="downloadPDF()"
+                style="background:var(--wood-mid); box-shadow:0 2px 12px rgba(107,58,31,0.3);">⬇ Download PDF</button>
+            <button class="btn-secondary" id="btn-clear" onclick="clearAll()">🗑 Clear All</button>
+        </div>
+
+    </main>
+
+    <footer>© 2026 Suproan Enterprises · All Rights Reserved · Patna, Bihar</footer>
+
+    <script src="invoice.js"></script>
+</body>
+
+</html>
