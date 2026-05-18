@@ -1,17 +1,17 @@
-# Suproan Invoice Generator
+# Suproan Bill Invoice Generator
 
-A lightweight, browser-based tax invoice generator built for **Suproan Enterprises**, a premium plywood and board supplier based in Darbhanga, Bihar. The application runs entirely in the browser with no backend, no dependencies, and no build process required.
+A lightweight, browser-based bill invoice generator. The application runs entirely in the browser with no backend, no dependencies, and no build process required.
 
 ---
 
 ## Features
 
-- Fill in customer name, invoice number, and date in a clean billing form
+- Fill in customer name, bill number, and date in a clean billing form
 - Add and remove line items with a dropdown of preset plywood sizes plus a custom entry option
 - Automatically calculates the total quantity per row and the overall grand total
-- Download the invoice as a PDF directly from the browser with a pre-filled filename
+- Download the bill as a PDF directly from the browser with a pre-filled filename
 - Fully responsive layout that works on desktop, tablet, and mobile devices
-- Clear All button to reset the invoice for the next customer
+- Clear All button to reset the bill for the next customer
 
 ---
 
@@ -31,8 +31,8 @@ suproan-invoice/
 
 1. Clone or download the repository.
 2. Open `index.html` in any modern browser (Chrome, Edge, or Firefox recommended).
-3. Fill in the invoice details and add items.
-4. Click **Download PDF** to save the invoice.
+3. Fill in the bill details and add items.
+4. Click **Download PDF** to save the bill.
 
 No installation, package manager, or build step is required.
 
@@ -42,8 +42,8 @@ No installation, package manager, or build step is required.
 
 | Step | Action |
 |------|--------|
-| 1 | Enter the customer name, invoice number, and invoice date in the Bill To section |
-| 2 | Click **Add Row** to add a plywood line item |
+| 1 | Enter the customer name, bill number, and bill date in the Bill To section |
+| 2 | Click **Add Row** to add a line item |
 | 3 | Select a size from the dropdown or choose **Custom** to enter a size manually |
 | 4 | Enter the quantity and rate — the total quantity is calculated automatically |
 | 5 | Click **Download PDF** and choose **Save as PDF** in the browser print dialog |
@@ -63,18 +63,6 @@ The following sizes are available in the size dropdown:
 
 ---
 
-## Business Information
-
-| Field   | Details |
-|---------|---------|
-| Company | Suproan Enterprises |
-| Type    | Premium Plywood and Board Suppliers |
-| Address | C/O Suproan Enterprises, Donar Industrial Area, Darbhanga – 864009 |
-| Phone   | 8294150110 / 7992315783 |
-| Email   | info@suproanenterprises.com |
-
----
-
 ## Technology Stack
 
 | Technology | Purpose |
@@ -88,5 +76,4 @@ The following sizes are available in the size dropdown:
 
 ## License
 
-This project is intended for internal business use by Suproan Enterprises.  
-© 2026 Suproan Enterprises. All Rights Reserved.
+© 2026 All Rights Reserved.
