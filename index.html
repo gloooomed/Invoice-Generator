@@ -13,6 +13,42 @@
 
 <body>
 
+    <!-- ══════════════════ PASSCODE GATE ══════════════════ -->
+    <div id="passcode-overlay">
+        <div id="passcode-card">
+            <div id="passcode-logo-wrap">
+                <img src="design.png" alt="Suproan Enterprises" id="passcode-logo" />
+            </div>
+            <h2 id="passcode-heading">Enter Passcode</h2>
+            <p id="passcode-sub">This tool is for authorised use only.</p>
+
+            <div id="pin-dots">
+                <span class="dot" id="dot-0"></span>
+                <span class="dot" id="dot-1"></span>
+                <span class="dot" id="dot-2"></span>
+                <span class="dot" id="dot-3"></span>
+            </div>
+
+            <p id="passcode-error"></p>
+
+            <div id="numpad">
+                <button class="num-btn" onclick="appendDigit('1')">1</button>
+                <button class="num-btn" onclick="appendDigit('2')">2</button>
+                <button class="num-btn" onclick="appendDigit('3')">3</button>
+                <button class="num-btn" onclick="appendDigit('4')">4</button>
+                <button class="num-btn" onclick="appendDigit('5')">5</button>
+                <button class="num-btn" onclick="appendDigit('6')">6</button>
+                <button class="num-btn" onclick="appendDigit('7')">7</button>
+                <button class="num-btn" onclick="appendDigit('8')">8</button>
+                <button class="num-btn" onclick="appendDigit('9')">9</button>
+                <button class="num-btn num-btn--blank" disabled></button>
+                <button class="num-btn" onclick="appendDigit('0')">0</button>
+                <button class="num-btn num-btn--del" onclick="deleteDigit()" title="Delete">⌫</button>
+            </div>
+        </div>
+    </div>
+    <!-- ═══════════════════════════════════════════════════ -->
+
     <!-- HEADER -->
     <header>
         <div class="header-inner">
@@ -118,6 +154,88 @@
     <footer>© 2026 Suproan Enterprises · All Rights Reserved · Darbhanga, Bihar</footer>
 
     <script src="invoice.js"></script>
+
+    <!-- ── PASSCODE LOGIC ── -->
+    <script>
+        (function () {
+            // SHA-256 hash of the passcode — the real PIN is never stored here.
+            // To update: run sha256("yourNewPin") in the browser console and paste the result below.
+            var CORRECT_HASH = '8eec27653c19ed078b2f3bae16ff901d16347d7917d2b8e2317914e2437bf324';
+
+            var enteredPin = '';
+            var overlay = document.getElementById('passcode-overlay');
+            var errorEl = document.getElementById('passcode-error');
+
+            // If already unlocked in this browser session, skip the gate
+            if (sessionStorage.getItem('suproan_unlocked') === '1') {
+                overlay.style.display = 'none';
+                return;
+            }
+
+            // Compute SHA-256 of a string using the browser's built-in Web Crypto API
+            async function sha256(str) {
+                var buf = await crypto.subtle.digest(
+                    'SHA-256',
+                    new TextEncoder().encode(str)
+                );
+                return Array.from(new Uint8Array(buf))
+                    .map(function (b) { return b.toString(16).padStart(2, '0'); })
+                    .join('');
+            }
+
+            function updateDots() {
+                for (var i = 0; i < 4; i++) {
+                    var dot = document.getElementById('dot-' + i);
+                    dot.classList.toggle('dot--filled', i < enteredPin.length);
+                }
+            }
+
+            function shakeCard() {
+                var card = document.getElementById('passcode-card');
+                card.classList.remove('shake');
+                void card.offsetWidth; // force reflow to restart animation
+                card.classList.add('shake');
+            }
+
+            window.appendDigit = function (d) {
+                if (enteredPin.length >= 4) return;
+                enteredPin += d;
+                errorEl.textContent = '';
+                updateDots();
+                if (enteredPin.length === 4) {
+                    setTimeout(checkPin, 120);
+                }
+            };
+
+            window.deleteDigit = function () {
+                if (enteredPin.length === 0) return;
+                enteredPin = enteredPin.slice(0, -1);
+                errorEl.textContent = '';
+                updateDots();
+            };
+
+            async function checkPin() {
+                var hash = await sha256(enteredPin);
+                if (hash === CORRECT_HASH) {
+                    sessionStorage.setItem('suproan_unlocked', '1');
+                    overlay.classList.add('overlay--fade-out');
+                    setTimeout(function () { overlay.style.display = 'none'; }, 600);
+                } else {
+                    shakeCard();
+                    errorEl.textContent = 'Incorrect passcode. Try again.';
+                    enteredPin = '';
+                    updateDots();
+                }
+            }
+
+            // Keyboard support
+            document.addEventListener('keydown', function (e) {
+                if (overlay.style.display === 'none') return;
+                if (e.key >= '0' && e.key <= '9') window.appendDigit(e.key);
+                else if (e.key === 'Backspace') window.deleteDigit();
+            });
+        })();
+    </script>
 </body>
 
 </html>
