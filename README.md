@@ -1,6 +1,6 @@
 # Suproan Bill Invoice Generator
 
-A lightweight, browser-based bill invoice generator. The application runs entirely in the browser with no backend, no dependencies, and no build process required.
+A lightweight, browser-based bill invoice generator with backend storage. The application runs in the browser and automatically saves PDFs to a Node.js backend server.
 
 ---
 
@@ -9,9 +9,10 @@ A lightweight, browser-based bill invoice generator. The application runs entire
 - Fill in customer name, bill number, and date in a clean billing form
 - Add and remove line items with a dropdown of preset plywood sizes plus a custom entry option
 - Automatically calculates the total quantity per row and the overall grand total
-- Download the bill as a PDF directly from the browser with a pre-filled filename
+- **Download the bill as a PDF and automatically save to backend**
 - Fully responsive layout that works on desktop, tablet, and mobile devices
 - Clear All button to reset the bill for the next customer
+- Backend API to manage invoices (save, list, download)
 
 ---
 
@@ -19,22 +20,47 @@ A lightweight, browser-based bill invoice generator. The application runs entire
 
 ```
 suproan-invoice/
-├── index.html      — HTML markup and page structure
-├── style.css       — Stylesheet including responsive breakpoints and print styles
-├── invoice.js      — Application logic: rendering, totals, PDF export
-└── README.md       — Project documentation
+├── index.html        — HTML markup and page structure
+├── style.css         — Stylesheet including responsive breakpoints and print styles
+├── invoice.js        — Application logic: rendering, totals, PDF export
+├── server.js         — Express backend server for PDF storage
+├── package.json      — Dependencies configuration
+├── invoices/         — Folder where PDFs are saved
+└── README.md         — Project documentation
 ```
 
 ---
 
 ## Getting Started
 
-1. Clone or download the repository.
-2. Open `index.html` in any modern browser (Chrome, Edge, or Firefox recommended).
-3. Fill in the bill details and add items.
-4. Click **Download PDF** to save the bill.
+### Frontend Only (Browser-based)
+1. Open `index.html` directly in any modern browser.
+2. Fill in the bill details and add items.
+3. Click **Download PDF** to save the bill locally.
 
-No installation, package manager, or build step is required.
+### With Backend (Automatic Cloud Storage)
+
+#### Prerequisites
+- Node.js (v14 or higher)
+- npm (comes with Node.js)
+
+#### Setup
+
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+2. **Start the server:**
+   ```bash
+   npm start
+   ```
+   The server will run on `http://localhost:3000`
+
+3. **Open in browser:**
+   - Navigate to `http://localhost:3000`
+   - Fill in the bill details
+   - Click **Download PDF** — the file will automatically save to the backend
 
 ---
 
@@ -46,7 +72,30 @@ No installation, package manager, or build step is required.
 | 2 | Click **Add Row** to add a line item |
 | 3 | Select a size from the dropdown or choose **Custom** to enter a size manually |
 | 4 | Enter the quantity and rate — the total quantity is calculated automatically |
-| 5 | Click **Download PDF** and choose **Save as PDF** in the browser print dialog |
+| 5 | Click **Download PDF** — invoice is saved to backend automatically |
+
+---
+
+## API Endpoints
+
+### Save Invoice
+**POST** `/api/save-invoice`
+```json
+{
+  "pdfData": "base64_encoded_pdf",
+  "filename": "INV-001_CustomerName.pdf"
+}
+```
+
+### List Invoices
+**GET** `/api/invoices`
+
+Returns list of all saved invoices with metadata.
+
+### Download Invoice
+**GET** `/api/download/:filename`
+
+Downloads a specific invoice by filename.
 
 ---
 

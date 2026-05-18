@@ -1,0 +1,19 @@
+{
+  "name": "suproan-invoice-backend",
+  "version": "1.0.0",
+  "description": "Invoice generator with backend PDF storage",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["invoice", "pdf"],
+  "author": "Praphull",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "html2pdf.js": "^0.10.1",
+    "multer": "^1.4.5-lts.1"
+  }
+}
