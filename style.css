@@ -803,8 +803,14 @@ footer {
     .add-row-btn,
     .del-btn,
     .del-cell,
-    .notes-area {
+    .notes-area,
+    .calendar-btn {
         display: none !important;
+    }
+
+    /* Date field — collapse flex wrapper so date reads as plain text */
+    .date-picker-wrapper {
+        display: block !important;
     }
 
     /* Show customer fields as plain readable text */
