@@ -217,7 +217,7 @@ main {
     .header-meta {
         text-align: left;
         width: 100%;
-        border-top: 1px solid rgba(255,255,255,0.1);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
         padding-top: 12px;
     }
 
@@ -277,7 +277,7 @@ main {
         margin-bottom: 10px;
         padding: 12px;
         background: var(--white);
-        box-shadow: 0 1px 6px rgba(44,26,14,0.06);
+        box-shadow: 0 1px 6px rgba(44, 26, 14, 0.06);
     }
 
     /* Each cell becomes a labelled row */
@@ -356,9 +356,11 @@ main {
         max-width: 260px;
     }
 
+
     .sig-line {
         width: 100%;
     }
+
 
     /* Buttons — full width */
     .actions {
