@@ -156,6 +156,40 @@
 
     <script src="invoice.js"></script>
 
+    <!-- ── ANTI-INSPECT GUARD ── -->
+    <script>
+        (function () {
+            // Block right-click context menu
+            document.addEventListener('contextmenu', function (e) {
+                e.preventDefault();
+            });
+
+            // Block DevTools keyboard shortcuts
+            document.addEventListener('keydown', function (e) {
+                // F12
+                if (e.key === 'F12') { e.preventDefault(); return false; }
+
+                // Ctrl+Shift+I  (DevTools)
+                // Ctrl+Shift+J  (Console)
+                // Ctrl+Shift+C  (Element picker)
+                if (e.ctrlKey && e.shiftKey &&
+                    ['I', 'i', 'J', 'j', 'C', 'c'].includes(e.key)) {
+                    e.preventDefault(); return false;
+                }
+
+                // Ctrl+U  (View source)
+                if (e.ctrlKey && (e.key === 'U' || e.key === 'u')) {
+                    e.preventDefault(); return false;
+                }
+
+                // Ctrl+S  (Save page)
+                if (e.ctrlKey && (e.key === 'S' || e.key === 's')) {
+                    e.preventDefault(); return false;
+                }
+            });
+        })();
+    </script>
+
     <!-- ── PASSCODE LOGIC ── -->
     <script>
         (function () {
