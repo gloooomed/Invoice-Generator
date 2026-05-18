@@ -150,7 +150,10 @@ function downloadPDF() {
 (function init() {
     const dateEl = /** @type {HTMLInputElement} */ (document.getElementById('invoice-date'));
     const today = new Date();
-    if (dateEl) dateEl.value = today.toISOString().split('T')[0];
+    const dd = String(today.getDate()).padStart(2, '0');
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const yy = String(today.getFullYear()).slice(-2);
+    if (dateEl) dateEl.value = `${dd}-${mm}-${yy}`;
 
     // Start with 3 empty rows
     addRow(); addRow(); addRow();
