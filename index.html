@@ -158,47 +158,57 @@
     <!-- ── PASSCODE LOGIC ── -->
     <script>
         (function () {
-            // SHA-256 hash of the passcode — the real PIN is never stored here.
-            // To update: run sha256("yourNewPin") in the browser console and paste the result below.
-            var CORRECT_HASH = '8eec27653c19ed078b2f3bae16ff901d16347d7917d2b8e2317914e2437bf324';
+            // PBKDF2-SHA256 derived key (100 000 iterations + salt).
+            // The real PIN is NEVER stored — this hash is computationally irreversible.
+            var CORRECT_HASH = 'a0b7ec85fc4d0cdbd2eb366d15ab6d6aef49d2cfe5f3a73eaad5c886f671edf7';
+            var SALT         = 'SuproanEnterprises2026Secure';
+            var ITERATIONS   = 100000;
 
             var enteredPin = '';
-            var overlay = document.getElementById('passcode-overlay');
-            var errorEl = document.getElementById('passcode-error');
+            var busy       = false;
+            var overlay    = document.getElementById('passcode-overlay');
+            var errorEl    = document.getElementById('passcode-error');
 
-            // If already unlocked in this browser session, skip the gate
+            // Already unlocked this session — skip the gate
             if (sessionStorage.getItem('suproan_unlocked') === '1') {
                 overlay.style.display = 'none';
                 return;
             }
 
-            // Compute SHA-256 of a string using the browser's built-in Web Crypto API
-            async function sha256(str) {
-                var buf = await crypto.subtle.digest(
-                    'SHA-256',
-                    new TextEncoder().encode(str)
+            // ── PBKDF2-SHA256 via Web Crypto API ──────────────────────────
+            async function pbkdf2(pin) {
+                var enc = new TextEncoder();
+                var keyMaterial = await crypto.subtle.importKey(
+                    'raw', enc.encode(pin), 'PBKDF2', false, ['deriveBits']
                 );
-                return Array.from(new Uint8Array(buf))
+                var bits = await crypto.subtle.deriveBits(
+                    { name: 'PBKDF2', salt: enc.encode(SALT),
+                      iterations: ITERATIONS, hash: 'SHA-256' },
+                    keyMaterial, 256
+                );
+                return Array.from(new Uint8Array(bits))
                     .map(function (b) { return b.toString(16).padStart(2, '0'); })
                     .join('');
             }
 
+            // ── UI helpers ────────────────────────────────────────────────
             function updateDots() {
                 for (var i = 0; i < 4; i++) {
-                    var dot = document.getElementById('dot-' + i);
-                    dot.classList.toggle('dot--filled', i < enteredPin.length);
+                    document.getElementById('dot-' + i)
+                        .classList.toggle('dot--filled', i < enteredPin.length);
                 }
             }
 
             function shakeCard() {
                 var card = document.getElementById('passcode-card');
                 card.classList.remove('shake');
-                void card.offsetWidth; // force reflow to restart animation
+                void card.offsetWidth;
                 card.classList.add('shake');
             }
 
+            // ── Input handlers ────────────────────────────────────────────
             window.appendDigit = function (d) {
-                if (enteredPin.length >= 4) return;
+                if (busy || enteredPin.length >= 4) return;
                 enteredPin += d;
                 errorEl.textContent = '';
                 updateDots();
@@ -208,23 +218,34 @@
             };
 
             window.deleteDigit = function () {
-                if (enteredPin.length === 0) return;
+                if (busy || enteredPin.length === 0) return;
                 enteredPin = enteredPin.slice(0, -1);
                 errorEl.textContent = '';
                 updateDots();
             };
 
+            // ── Verification ──────────────────────────────────────────────
             async function checkPin() {
-                var hash = await sha256(enteredPin);
-                if (hash === CORRECT_HASH) {
-                    sessionStorage.setItem('suproan_unlocked', '1');
-                    overlay.classList.add('overlay--fade-out');
-                    setTimeout(function () { overlay.style.display = 'none'; }, 600);
-                } else {
-                    shakeCard();
-                    errorEl.textContent = 'Incorrect passcode. Try again.';
+                busy = true;
+                errorEl.textContent = 'Verifying…';
+                try {
+                    var hash = await pbkdf2(enteredPin);
+                    if (hash === CORRECT_HASH) {
+                        sessionStorage.setItem('suproan_unlocked', '1');
+                        overlay.classList.add('overlay--fade-out');
+                        setTimeout(function () { overlay.style.display = 'none'; }, 600);
+                    } else {
+                        shakeCard();
+                        errorEl.textContent = 'Incorrect passcode. Try again.';
+                        enteredPin = '';
+                        updateDots();
+                        busy = false;
+                    }
+                } catch (_) {
+                    errorEl.textContent = 'Error. Please try again.';
                     enteredPin = '';
                     updateDots();
+                    busy = false;
                 }
             }
 
