@@ -128,71 +128,24 @@ function clearAll() {
 }
 
 // ── DOWNLOAD PDF ──
-async function downloadPDF() {
-    // Derive a filename from the invoice number
+function downloadPDF() {
     const invNoEl = /** @type {HTMLInputElement} */ (document.getElementById('invoice-no'));
     const custNameEl = /** @type {HTMLInputElement} */ (document.getElementById('cust-name'));
-    const invNo = (invNoEl ? invNoEl.value.trim() : 'Invoice') || 'Invoice';
+    const invNo = (invNoEl ? invNoEl.value.trim() : 'Bill') || 'Bill';
     const cust = (custNameEl ? custNameEl.value.trim() : '') || '';
     const filename = cust ? `${invNo}_${cust}.pdf` : `${invNo}.pdf`;
 
-    try {
-        // Show loading indicator
-        const btn = document.getElementById('btn-download-pdf');
-        const originalText = btn.textContent;
-        btn.textContent = '⏳ Processing...';
-        btn.disabled = true;
+    // Set the document title temporarily so browsers use it as the default PDF filename
+    const originalTitle = document.title;
+    document.title = filename;
 
-        // Clone the main content to avoid modifying the original
-        const element = document.querySelector('main');
-        const cloned = element.cloneNode(true);
+    window.print();
 
-        // Remove any problematic elements from clone
-        cloned.querySelectorAll('button').forEach(btn => btn.remove());
-        cloned.querySelectorAll('input').forEach(input => {
-            const label = document.createElement('span');
-            label.textContent = input.value || input.placeholder;
-            input.replaceWith(label);
-        });
-
-        // Generate PDF from the cloned element
-        const opt = {
-            margin: 10,
-            filename: filename,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true, allowTaint: true },
-            jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
-        };
-
-        const pdf = await html2pdf().set(opt).from(cloned).outputPdf('arraybuffer');
-        const pdfBase64 = btoa(String.fromCharCode.apply(null, new Uint8Array(pdf)));
-
-        // Send to backend
-        const response = await fetch('/api/save-invoice', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ pdfData: pdfBase64, filename: filename })
-        });
-
-        const result = await response.json();
-
-        if (response.ok) {
-            alert(`✓ Invoice saved successfully!\nFilename: ${result.filename}\nSize: ${(result.size / 1024).toFixed(2)} KB`);
-        } else {
-            alert(`✗ Error: ${result.error}`);
-        }
-
-        // Restore button
-        btn.textContent = originalText;
-        btn.disabled = false;
-    } catch (error) {
-        console.error('Error generating PDF:', error);
-        alert(`✗ Error: ${error.message}`);
-        const btn = document.getElementById('btn-download-pdf');
-        btn.textContent = '⬇ Download PDF';
-        btn.disabled = false;
-    }
+    // Restore original title after a short delay
+    setTimeout(() => { document.title = originalTitle; }, 1000);
 }
+
+
 
 // ── DATE PICKER ──
 function handleDatePick(/** @type {string} */ isoDate) {
