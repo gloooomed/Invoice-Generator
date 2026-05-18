@@ -786,4 +786,51 @@ footer {
     thead th:last-child {
         display: none;
     }
+
+    /* ── RESET MOBILE CARD LAYOUT FOR PRINT ── */
+    /* Undo the mobile block overrides so the table prints correctly
+       even when triggered from a small-screen device */
+    #items-table,
+    #items-table thead,
+    #items-table tbody,
+    #items-table tfoot,
+    #items-table tr,
+    #items-table th,
+    #items-table td {
+        display: revert !important;
+    }
+
+    /* Restore thead visibility */
+    #items-table thead {
+        display: table-header-group !important;
+    }
+
+    /* Restore row display */
+    #items-table tbody tr,
+    #items-table tfoot tr {
+        display: table-row !important;
+        border: none !important;
+        border-radius: 0 !important;
+        margin-bottom: 0 !important;
+        padding: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+    }
+
+    /* Restore cell display and remove data-label pseudo-elements */
+    #items-table tbody td,
+    #items-table tfoot td {
+        display: table-cell !important;
+        border-bottom: none !important;
+    }
+
+    #items-table tbody td::before,
+    #items-table tfoot td::before {
+        content: none !important;
+    }
+
+    /* Keep total row right-aligned */
+    #total-row td {
+        text-align: right !important;
+    }
 }
