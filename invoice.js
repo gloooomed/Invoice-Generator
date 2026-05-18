@@ -152,16 +152,6 @@ function downloadPDF() {
     const today = new Date();
     if (dateEl) dateEl.value = today.toISOString().split('T')[0];
 
-    const displayDate = today.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
-    const dateDisplay = document.getElementById('invoice-date-display');
-    if (dateDisplay) dateDisplay.textContent = displayDate;
-
-    dateEl?.addEventListener('input', () => {
-        const d = new Date(dateEl.value);
-        const dd = document.getElementById('invoice-date-display');
-        if (dd) dd.textContent = d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
-    });
-
     // Start with 3 empty rows
     addRow(); addRow(); addRow();
 })();
