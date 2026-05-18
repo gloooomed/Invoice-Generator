@@ -143,18 +143,28 @@ async function downloadPDF() {
         btn.textContent = '⏳ Processing...';
         btn.disabled = true;
 
-        // Get the main content to convert to PDF
+        // Clone the main content to avoid modifying the original
         const element = document.querySelector('main');
+        const cloned = element.cloneNode(true);
+
+        // Remove any problematic elements from clone
+        cloned.querySelectorAll('button').forEach(btn => btn.remove());
+        cloned.querySelectorAll('input').forEach(input => {
+            const label = document.createElement('span');
+            label.textContent = input.value || input.placeholder;
+            input.replaceWith(label);
+        });
+
+        // Generate PDF from the cloned element
         const opt = {
             margin: 10,
             filename: filename,
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 },
+            html2canvas: { scale: 2, useCORS: true, allowTaint: true },
             jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
         };
 
-        // Generate PDF
-        const pdf = await html2pdf().set(opt).from(element).outputPdf('arraybuffer');
+        const pdf = await html2pdf().set(opt).from(cloned).outputPdf('arraybuffer');
         const pdfBase64 = btoa(String.fromCharCode.apply(null, new Uint8Array(pdf)));
 
         // Send to backend
