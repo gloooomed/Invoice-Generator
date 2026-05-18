@@ -6,8 +6,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Suproan Enterprises – Bill</title>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap"
         rel="stylesheet" />
     <link rel="stylesheet" href="style.css" />
 </head>
@@ -18,11 +17,7 @@
     <header>
         <div class="header-inner">
             <div class="brand">
-                <div class="brand-icon">🪵</div>
-                <div class="brand-text">
-                    <h1>Suproan Enterprises</h1>
-                    <p>Premium Plywood &amp; Board Suppliers</p>
-                </div>
+                <img src="design.png" alt="Suproan Enterprises" class="brand-logo" />
             </div>
             <div class="header-meta">
                 <p>C/O - Suproan Enterprises</p>
@@ -60,8 +55,7 @@
                 <label>Bill Date</label>
                 <div class="date-picker-wrapper">
                     <input type="text" id="invoice-date" placeholder="DD-MM-YY" maxlength="8" readonly />
-                    <input type="date" id="invoice-date-picker" tabindex="-1"
-                        onchange="handleDatePick(this.value)" />
+                    <input type="date" id="invoice-date-picker" tabindex="-1" onchange="handleDatePick(this.value)" />
                     <button type="button" class="calendar-btn" onclick="openDatePicker()"
                         title="Pick a date">📅</button>
                 </div>

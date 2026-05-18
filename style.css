@@ -21,7 +21,7 @@
 }
 
 body {
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     background: var(--cream);
     color: var(--ink);
     min-height: 100vh;
@@ -79,8 +79,15 @@ header::before {
     box-shadow: 0 4px 20px rgba(201, 146, 42, 0.4);
 }
 
+.brand-logo {
+    height: 80px;
+    width: auto;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+}
+
 .brand-text h1 {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 2rem;
     font-weight: 900;
     color: var(--cream);
@@ -130,7 +137,7 @@ header::before {
 }
 
 #invoice-number-display {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 1rem;
     color: var(--wood-dark);
     font-weight: 700;
@@ -145,7 +152,7 @@ main {
 
 /* ── CUSTOMER SECTION ────────────────────────────────────── */
 .section-title {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 1.1rem;
     color: var(--wood-mid);
     margin-bottom: 16px;
@@ -393,7 +400,7 @@ select {
     border: 1.5px solid var(--border);
     border-radius: 6px;
     background: var(--white);
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 0.92rem;
     color: var(--ink);
     transition: border-color 0.2s, box-shadow 0.2s;
@@ -605,7 +612,7 @@ tfoot tr td {
     border-radius: 0 0 12px 12px;
     padding: 10px 20px;
     text-align: right;
-    font-family: 'Playfair Display', serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 1rem;
     font-weight: 700;
     color: var(--wood-dark);
@@ -658,13 +665,13 @@ tfoot tr td {
 }
 
 .totals-grand span:first-child {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 1rem !important;
     color: var(--gold-light) !important;
 }
 
 .totals-grand span:last-child {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 1.35rem !important;
     color: var(--gold) !important;
     font-weight: 700 !important;
