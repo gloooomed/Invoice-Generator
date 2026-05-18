@@ -1,4 +1,4 @@
-/** @type {{ id: number, size: string, qty: number, rate: number }[]} */
+/** @type {{ id: number, size: string, qty: number, rate: number, sqft: number }[]} */
 let items = [];
 let nextId = 1;
 
@@ -7,7 +7,7 @@ function formatINR(/** @type {number} */ n) {
 }
 
 function addRow() {
-    items.push({ id: nextId++, size: '', qty: 0, rate: 0 });
+    items.push({ id: nextId++, size: '', qty: 0, rate: 0, sqft: 0 });
     render();
 }
 
@@ -16,8 +16,18 @@ function removeRow(/** @type {number} */ id) {
     render();
 }
 
-function getTotalQty(/** @type {typeof items[0]} */ item) {
-    return item.qty;
+/** Parse size string like "84*42" and return sqft = (L * B * 144) */
+function getSqFt(/** @type {string} */ size) {
+    const m = size.match(/(\d+(?:\.\d+)?)\*(\d+(?:\.\d+)?)/);
+    if (!m) return 0;
+    const L = parseFloat(m[1]);
+    const B = parseFloat(m[2]);
+    return +((L * B) / 144).toFixed(4);
+}
+
+function getTotalPrice(/** @type {typeof items[0]} */ item) {
+    const sf = getSqFt(item.size);
+    return +(sf * item.rate).toFixed(2);
 }
 
 function render() {
@@ -26,7 +36,8 @@ function render() {
     tbody.innerHTML = '';
 
     items.forEach((item) => {
-        const total = getTotalQty(item);
+        const sqft = getSqFt(item.size);
+        const totalPrice = getTotalPrice(item);
         const tr = document.createElement('tr');
 
         const sizes = [
@@ -60,12 +71,13 @@ function render() {
           oninput="updateField(${item.id},'qty',+this.value)"
           style="text-align:right;" />
       </td>
+      <td class="sqft-cell" data-label="Sq. Ft.">${sqft > 0 ? sqft.toLocaleString('en-IN') : '—'}</td>
       <td data-label="Rate (₹)">
         <input type="number" value="${item.rate || ''}" min="0" placeholder="0"
           oninput="updateField(${item.id},'rate',+this.value)"
           style="text-align:right;" />
       </td>
-      <td class="total-cell" data-label="Total Qty">${total > 0 ? total.toLocaleString('en-IN') : '—'}</td>
+      <td class="total-cell" data-label="Total Price">${totalPrice > 0 ? formatINR(totalPrice) : '—'}</td>
       <td class="del-cell" data-label="">
         <button class="del-btn" onclick="removeRow(${item.id})" title="Remove row">✕</button>
       </td>
@@ -96,21 +108,25 @@ function updateField(/** @type {number} */ id, /** @type {string} */ field, /** 
     } else {
         (item)[field] = value;
     }
-    // refresh only the total cell of this row
+    // refresh sqft cell and total price cell of this row
     const rows = document.querySelectorAll('#items-body tr');
     const idx = items.indexOf(item);
     if (rows[idx]) {
-        const cell = rows[idx].querySelector('.total-cell');
-        const t = getTotalQty(item);
-        if (cell) cell.textContent = t > 0 ? t.toLocaleString('en-IN') : '—';
+        const sqftCell = rows[idx].querySelector('.sqft-cell');
+        const sf = getSqFt(item.size);
+        if (sqftCell) sqftCell.textContent = sf > 0 ? sf.toLocaleString('en-IN') : '—';
+
+        const totalCell = rows[idx].querySelector('.total-cell');
+        const tp = getTotalPrice(item);
+        if (totalCell) totalCell.textContent = tp > 0 ? formatINR(tp) : '—';
     }
     updateTotal();
 }
 
 function updateTotal() {
-    const grand = items.reduce((s, i) => s + getTotalQty(i), 0);
+    const grand = items.reduce((s, i) => s + getTotalPrice(i), 0);
     const el = document.getElementById('grand-total');
-    if (el) el.textContent = grand.toLocaleString('en-IN');
+    if (el) el.textContent = formatINR(grand);
 }
 
 function updateInvoiceNumber(/** @type {string} */ val) {
