@@ -338,6 +338,7 @@ main {
     #items-table tfoot #total-row td {
         display: block;
         text-align: right;
+        white-space: nowrap;
     }
 
     /* Signature — stack on mobile */
@@ -551,6 +552,23 @@ tfoot tr td {
 .add-row-btn:hover {
     background: var(--gold);
     color: var(--wood-dark);
+}
+
+/* ── TOTAL QTY BAR ───────────────────────────────────────── */
+.total-qty-bar {
+    background: var(--cream-deep);
+    border: 1.5px solid var(--border);
+    border-top: 2px solid var(--border);
+    border-radius: 0 0 12px 12px;
+    padding: 10px 20px;
+    text-align: right;
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--wood-dark);
+    white-space: nowrap;
+    margin-top: -1px;
+    margin-bottom: 20px;
 }
 
 /* ── TOTALS BOX ──────────────────────────────────────────── */
@@ -829,8 +847,9 @@ footer {
         content: none !important;
     }
 
-    /* Keep total row right-aligned */
+    /* Keep total row right-aligned and prevent text wrapping */
     #total-row td {
         text-align: right !important;
+        white-space: nowrap !important;
     }
 }
