@@ -146,14 +146,36 @@ function downloadPDF() {
     setTimeout(() => { document.title = originalTitle; }, 1000);
 }
 
+// ── DATE PICKER ──
+function handleDatePick(/** @type {string} */ isoDate) {
+    if (!isoDate) return;
+    const [y, m, d] = isoDate.split('-');
+    const yy = y.slice(-2);
+    const el = document.getElementById('invoice-date');
+    if (el) el.value = `${d}-${m}-${yy}`;
+}
+
+function openDatePicker() {
+    const picker = /** @type {HTMLInputElement} */ (document.getElementById('invoice-date-picker'));
+    if (!picker) return;
+    try {
+        picker.showPicker();
+    } catch (_) {
+        picker.click();
+    }
+}
+
 // ── INIT ──
 (function init() {
     const dateEl = /** @type {HTMLInputElement} */ (document.getElementById('invoice-date'));
+    const pickerEl = /** @type {HTMLInputElement} */ (document.getElementById('invoice-date-picker'));
     const today = new Date();
     const dd = String(today.getDate()).padStart(2, '0');
     const mm = String(today.getMonth() + 1).padStart(2, '0');
     const yy = String(today.getFullYear()).slice(-2);
+    const yyyy = today.getFullYear();
     if (dateEl) dateEl.value = `${dd}-${mm}-${yy}`;
+    if (pickerEl) pickerEl.value = `${yyyy}-${mm}-${dd}`;
 
     // Start with 3 empty rows
     addRow(); addRow(); addRow();

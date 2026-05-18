@@ -406,6 +406,47 @@ select:focus {
     box-shadow: 0 0 0 3px rgba(201, 146, 42, 0.12);
 }
 
+/* ── DATE PICKER WRAPPER ─────────────────────────────────── */
+.date-picker-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.date-picker-wrapper input[type="text"] {
+    flex: 1;
+    cursor: pointer;
+}
+
+/* Hidden native date input — invisible but functional */
+#invoice-date-picker {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
+    height: 0;
+    border: none;
+    padding: 0;
+}
+
+.calendar-btn {
+    background: var(--cream-deep);
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    line-height: 1;
+    transition: background 0.15s, border-color 0.15s;
+    flex-shrink: 0;
+}
+
+.calendar-btn:hover {
+    background: var(--border);
+    border-color: var(--gold);
+}
+
 /* ── ITEMS TABLE ─────────────────────────────────────────── */
 .table-wrapper {
     background: var(--white);

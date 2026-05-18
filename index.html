@@ -1,11 +1,11 @@
-<!-- Invoice Generator v1.0 -->
+<!-- Bill Generator v1.0 -->
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Suproan Enterprises – Invoice</title>
+    <title>Suproan Enterprises – Bill</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap"
         rel="stylesheet" />
@@ -35,11 +35,11 @@
         </div>
     </header>
 
-    <!-- INVOICE TAG BAR -->
+    <!-- BILL TAG BAR -->
     <div style="background:var(--wood-mid); max-width:1100px; margin:0 auto;">
         <div class="invoice-tag-bar">
-            <span>Tax Invoice</span>
-            <span id="invoice-number-display">INV-2026-001</span>
+            <span>Tax Bill</span>
+            <span id="invoice-number-display">BILL-2026-001</span>
         </div>
     </div>
 
@@ -53,12 +53,18 @@
                 <input type="text" id="cust-name" placeholder="e.g. Raj Constructions" />
             </div>
             <div>
-                <label>Invoice No.</label>
-                <input type="text" id="invoice-no" value="INV-2026-001" oninput="updateInvoiceNumber(this.value)" />
+                <label>Bill No.</label>
+                <input type="text" id="invoice-no" value="BILL-2026-001" oninput="updateInvoiceNumber(this.value)" />
             </div>
             <div>
-                <label>Invoice Date</label>
-                <input type="text" id="invoice-date" placeholder="DD-MM-YY" maxlength="8" />
+                <label>Bill Date</label>
+                <div class="date-picker-wrapper">
+                    <input type="text" id="invoice-date" placeholder="DD-MM-YY" maxlength="8" readonly />
+                    <input type="date" id="invoice-date-picker" tabindex="-1"
+                        onchange="handleDatePick(this.value)" />
+                    <button type="button" class="calendar-btn" onclick="openDatePicker()"
+                        title="Pick a date">📅</button>
+                </div>
             </div>
         </div>
 
