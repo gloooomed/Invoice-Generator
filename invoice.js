@@ -16,13 +16,13 @@ function removeRow(/** @type {number} */ id) {
     render();
 }
 
-/** Parse size string like "84*42" and return sqft = (L * B * 144) */
+/** Parse size string like "84*42" and return sqft = (L * B) / 144, rounded to 2 dp */
 function getSqFt(/** @type {string} */ size) {
     const m = size.match(/(\d+(?:\.\d+)?)\*(\d+(?:\.\d+)?)/);
     if (!m) return 0;
     const L = parseFloat(m[1]);
     const B = parseFloat(m[2]);
-    return +((L * B) / 144).toFixed(4);
+    return +((L * B) / 144).toFixed(2);
 }
 
 function getTotalPrice(/** @type {typeof items[0]} */ item) {
@@ -71,7 +71,7 @@ function render() {
           oninput="updateField(${item.id},'qty',+this.value)"
           style="text-align:right;" />
       </td>
-      <td class="sqft-cell" data-label="Sq. Ft.">${sqft > 0 ? sqft.toLocaleString('en-IN') : '—'}</td>
+      <td class="sqft-cell" data-label="Sq. Ft.">${sqft > 0 ? sqft.toFixed(2) : '—'}</td>
       <td data-label="Rate (₹)">
         <input type="number" value="${item.rate || ''}" min="0" placeholder="0"
           oninput="updateField(${item.id},'rate',+this.value)"
@@ -114,7 +114,7 @@ function updateField(/** @type {number} */ id, /** @type {string} */ field, /** 
     if (rows[idx]) {
         const sqftCell = rows[idx].querySelector('.sqft-cell');
         const sf = getSqFt(item.size);
-        if (sqftCell) sqftCell.textContent = sf > 0 ? sf.toLocaleString('en-IN') : '—';
+        if (sqftCell) sqftCell.textContent = sf > 0 ? sf.toFixed(2) : '—';
 
         const totalCell = rows[idx].querySelector('.total-cell');
         const tp = getTotalPrice(item);
@@ -145,21 +145,65 @@ function clearAll() {
 
 // ── DOWNLOAD PDF ──
 function downloadPDF() {
-    const invNoEl = /** @type {HTMLInputElement} */ (document.getElementById('invoice-no'));
-    const custNameEl = /** @type {HTMLInputElement} */ (document.getElementById('cust-name'));
+    const invNoEl = document.getElementById('invoice-no');
+    const custNameEl = document.getElementById('cust-name');
     const invNo = (invNoEl ? invNoEl.value.trim() : 'Bill') || 'Bill';
     const cust = (custNameEl ? custNameEl.value.trim() : '') || '';
     const filename = cust ? `${invNo}_${cust}.pdf` : `${invNo}.pdf`;
 
-    // Set the document title temporarily so browsers use it as the default PDF filename
+    // ── Replace Size-column selects with plain text before printing ──
+    // This removes the dropdown arrow and its gap from the printed output.
+    const restored = [];
+    document.querySelectorAll('#items-body tr').forEach(function (tr) {
+        const sizeCell = tr.querySelector('td:first-child');
+        if (!sizeCell) return;
+
+        const sel = sizeCell.querySelector('select');
+        const customInput = sizeCell.querySelector('input[type="text"]');
+
+        // Decide what text to display
+        let displayText = '';
+        if (customInput && customInput.value.trim()) {
+            displayText = customInput.value.trim();
+        } else if (sel) {
+            const opt = sel.options[sel.selectedIndex];
+            displayText = (opt && opt.value && opt.value !== '' && opt.value !== '__custom__')
+                ? opt.text : '\u2014';
+        }
+
+        // Insert a plain text span
+        const span = document.createElement('span');
+        span.className = 'print-size-text';
+        span.textContent = displayText;
+        span.style.cssText = 'font-weight:600;font-size:0.9rem;color:var(--ink);';
+        sizeCell.insertBefore(span, sizeCell.firstChild);
+
+        // Hide the interactive elements.
+        // Must use setProperty with 'important' because the @media print CSS
+        // has display:block !important on selects, which beats a plain inline style.
+        if (sel) sel.style.setProperty('display', 'none', 'important');
+        if (customInput) customInput.style.setProperty('display', 'none', 'important');
+
+        restored.push({ sel: sel, span: span, input: customInput });
+    });
+
+    // Temporarily set document title for PDF filename
     const originalTitle = document.title;
     document.title = filename;
 
     window.print();
 
-    // Restore original title after a short delay
-    setTimeout(() => { document.title = originalTitle; }, 1000);
+    // Restore everything after the print dialog closes
+    setTimeout(function () {
+        document.title = originalTitle;
+        restored.forEach(function (r) {
+            r.span.remove();
+            if (r.sel) r.sel.style.removeProperty('display');
+            if (r.input) r.input.style.removeProperty('display');
+        });
+    }, 1000);
 }
+
 
 
 

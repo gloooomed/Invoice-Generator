@@ -466,7 +466,16 @@ select:focus {
 table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed; /* enforce column widths */
 }
+
+/* ── COLUMN WIDTHS ───────────────────────────────────── */
+.col-size  { width: 32%; }
+.col-qty   { width: 14%; }
+.col-sqft  { width: 13%; }
+.col-rate  { width: 16%; }
+.col-total { width: 18%; }
+.col-del   { width: 7%;  }
 
 thead tr {
     background: var(--wood-dark);
@@ -835,8 +844,12 @@ footer {
         padding: 0 !important;
         font-size: 0.92rem !important;
         color: var(--ink) !important;
-        -webkit-appearance: none;
-        appearance: none;
+        -webkit-appearance: none !important;
+        -moz-appearance: none !important;
+        appearance: none !important;
+        /* Remove the native dropdown arrow */
+        background-image: none !important;
+        pointer-events: none;
     }
 
     header,
@@ -906,6 +919,114 @@ footer {
     #total-row td {
         text-align: right !important;
         white-space: nowrap !important;
+    }
+
+    /* ── COLUMN ALIGNMENT (print) ───────────────────────── */
+    /* Enforce table-layout so colgroup widths are honoured */
+    #items-table {
+        table-layout: fixed !important;
+        width: 100% !important;
+    }
+
+    /* Hide the delete column entirely */
+    .col-del,
+    #items-table th:last-child,
+    #items-table td.del-cell {
+        display: none !important;
+    }
+
+    /* Redistribute widths across the 5 visible columns */
+    .col-size  { width: 30% !important; }
+    .col-qty   { width: 15% !important; }
+    .col-sqft  { width: 15% !important; }
+    .col-rate  { width: 18% !important; }
+    .col-total { width: 22% !important; }
+
+    /* Header alignment */
+    #items-table thead th {
+        padding: 10px 12px !important;
+        font-size: 0.68rem !important;
+        text-align: left !important;
+        vertical-align: bottom !important;
+        overflow: hidden !important;
+    }
+    #items-table thead th.num {
+        text-align: right !important;
+    }
+
+    /* Body cells — base reset */
+    #items-table tbody td {
+        padding: 8px 12px !important;
+        vertical-align: middle !important;
+        overflow: hidden !important;
+        white-space: nowrap !important;
+        border-bottom: 1px solid var(--cream-deep) !important;
+    }
+
+    /* Size column — left aligned, override inline min-width */
+    #items-table tbody td:nth-child(1) {
+        text-align: left !important;
+        font-size: 0.9rem !important;
+        font-weight: 600 !important;
+        color: var(--ink) !important;
+        min-width: 0 !important;     /* cancel the inline min-width:200px */
+        max-width: 30% !important;
+        overflow: hidden !important;
+    }
+
+    /* Collapse select & text input inside Size cell so they don't widen the column */
+    #items-table tbody td:nth-child(1) select,
+    #items-table tbody td:nth-child(1) input[type="text"] {
+        width: auto !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        display: inline !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+
+    /* Quantity column — right aligned */
+    #items-table tbody td:nth-child(2) {
+        text-align: right !important;
+        font-size: 0.9rem !important;
+        color: var(--ink) !important;
+    }
+
+    /* Sq. Ft. column — right aligned */
+    #items-table tbody td:nth-child(3),
+    .sqft-cell {
+        text-align: right !important;
+        font-weight: 600 !important;
+        color: var(--wood-mid) !important;
+        font-size: 0.9rem !important;
+        padding-right: 12px !important;
+    }
+
+    /* Rate column — right aligned */
+    #items-table tbody td:nth-child(4) {
+        text-align: right !important;
+        font-size: 0.9rem !important;
+        color: var(--ink) !important;
+    }
+
+    /* Total Price column — right aligned */
+    #items-table tbody td:nth-child(5),
+    .total-cell {
+        text-align: right !important;
+        font-weight: 600 !important;
+        color: var(--wood-mid) !important;
+        font-size: 0.9rem !important;
+        padding-right: 12px !important;
+    }
+
+    /* Inputs inside table cells — stretch to fill and inherit alignment */
+    #items-table tbody td input,
+    #items-table tbody td select {
+        width: 100% !important;
+        text-align: inherit !important;
+        display: block !important;
+        font-size: 0.9rem !important;
+        overflow: hidden !important;
     }
 }
 
