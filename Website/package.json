@@ -1,0 +1,24 @@
+{
+  "name": "supraon-enterprises",
+  "version": "1.0.0",
+  "description": "M/S Supraon Enterprises - Premium Door & Plywood Designs",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "bundle": "esbuild script.ts --bundle --outfile=dist/script.js --format=esm",
+    "watch": "tsc --watch",
+    "dev": "esbuild script.ts --bundle --outfile=dist/script.js --format=esm --watch"
+  },
+  "keywords": [
+    "doors",
+    "plywood",
+    "designs",
+    "enterprise"
+  ],
+  "author": "Gopal Ji",
+  "license": "ISC",
+  "devDependencies": {
+    "esbuild": "^0.20.0",
+    "typescript": "^5.0.0"
+  }
+}
