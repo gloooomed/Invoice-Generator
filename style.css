@@ -206,30 +206,44 @@ main {
     .header-inner {
         flex-direction: column;
         align-items: flex-start;
-        gap: 16px;
-        padding: 20px 16px 18px;
+        gap: 12px;
+        padding: 16px 16px 14px;
+    }
+
+    .brand {
+        gap: 12px;
+        width: 100%;
+    }
+
+    .brand-logo {
+        height: 52px;
     }
 
     .brand-text h1 {
-        font-size: 1.4rem;
+        font-size: 1.25rem;
+    }
+
+    .brand-text p {
+        font-size: 0.68rem;
+        letter-spacing: 2px;
     }
 
     .brand-icon {
-        width: 48px;
-        height: 48px;
-        font-size: 22px;
+        width: 44px;
+        height: 44px;
+        font-size: 20px;
     }
 
     .header-meta {
         text-align: left;
         width: 100%;
         border-top: 1px solid rgba(255, 255, 255, 0.1);
-        padding-top: 12px;
+        padding-top: 10px;
     }
 
     .header-meta p {
-        font-size: 0.8rem;
-        line-height: 1.8;
+        font-size: 0.78rem;
+        line-height: 1.75;
     }
 
     /* Invoice tag bar */
@@ -237,7 +251,7 @@ main {
         flex-direction: column;
         align-items: flex-start;
         gap: 4px;
-        padding: 10px 16px;
+        padding: 8px 16px;
     }
 
     .invoice-tag-bar span {
@@ -247,7 +261,7 @@ main {
 
     /* Main padding */
     main {
-        padding: 20px 12px 40px;
+        padding: 16px 12px 40px;
     }
 
     /* Bill To — single column */
@@ -315,7 +329,7 @@ main {
     #items-table tbody td select {
         text-align: right;
         flex: 1;
-        max-width: 55%;
+        max-width: 58%;
         font-size: 0.95rem;
     }
 
@@ -347,6 +361,27 @@ main {
         white-space: nowrap;
     }
 
+    /* Total qty bar — allow text wrap on small screens */
+    .total-qty-bar {
+        white-space: normal;
+        font-size: 0.92rem;
+        padding: 10px 14px;
+        text-align: right;
+    }
+
+    /* Totals box — full width on mobile */
+    .totals-area {
+        justify-content: stretch;
+        margin-bottom: 24px;
+    }
+
+    .totals-box {
+        width: 100%;
+        min-width: 0;
+        padding: 18px 20px;
+        box-sizing: border-box;
+    }
+
     /* Signature — stack on mobile */
     .signature-area {
         flex-direction: column;
@@ -362,15 +397,14 @@ main {
         max-width: 260px;
     }
 
-
     .sig-line {
         width: 100%;
     }
 
-
     /* Buttons — full width */
     .actions {
         flex-direction: column;
+        gap: 10px;
     }
 
     .btn-primary,
@@ -383,11 +417,18 @@ main {
 
     .history-header {
         flex-direction: column;
+        gap: 10px;
     }
 
     .history-refresh-btn {
         width: 100%;
         text-align: center;
+    }
+
+    /* Passcode card — tighter padding on small phones */
+    #passcode-card {
+        padding: 32px 20px 28px;
+        max-width: calc(100vw - 32px);
     }
 }
 
