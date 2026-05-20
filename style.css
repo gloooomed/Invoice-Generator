@@ -336,9 +336,11 @@ main {
     #items-table tbody td input,
     #items-table tbody td select,
     #items-table tbody td .val-wrap {
+        display: block !important;
+        width: 55% !important;
+        max-width: 55% !important;
+        flex: none !important;
         text-align: center !important;
-        flex: 1;
-        max-width: 58%;
         font-size: 0.95rem;
     }
 
