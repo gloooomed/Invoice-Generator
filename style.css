@@ -284,66 +284,95 @@ main {
         border-radius: 8px;
     }
 
+    /* Break the table layout engine so colgroup stops constraining widths */
+    #items-table,
+    #items-table tbody,
+    #items-table tfoot {
+        display: block;
+        width: 100%;
+    }
+
+    /* Suppress colgroup column widths on mobile */
+    #items-table colgroup,
+    #items-table col {
+        display: none;
+    }
+
     /* Hide desktop table header */
     #items-table thead {
         display: none;
     }
 
-    /* Each row becomes a card */
+    /* Each row becomes a full-width card */
     #items-table tbody tr {
         display: block;
+        width: 100%;
         border: 1.5px solid var(--border);
         border-radius: 8px;
         margin-bottom: 10px;
         padding: 12px;
         background: var(--white);
         box-shadow: 0 1px 6px rgba(44, 26, 14, 0.06);
+        box-sizing: border-box;
     }
 
-    /* Each cell becomes a labelled row */
+    /* Each cell becomes a stacked label + input block */
     #items-table tbody td {
         display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 6px 0;
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 8px 4px;
         border-bottom: 1px solid var(--cream-deep);
+        gap: 4px;
     }
 
     #items-table tbody td:last-child {
         border-bottom: none;
     }
 
-    /* Data-label as the field name */
+    /* Data-label sits above the control */
     #items-table tbody td::before {
         content: attr(data-label);
-        font-size: 0.68rem;
+        font-size: 0.65rem;
         font-weight: 700;
         letter-spacing: 1.2px;
         text-transform: uppercase;
         color: var(--muted);
-        flex-shrink: 0;
-        margin-right: 10px;
+        line-height: 1;
     }
 
+    /* Inputs & selects take the full card width */
     #items-table tbody td input,
     #items-table tbody td select {
-        text-align: right;
-        flex: 1;
-        max-width: 58%;
-        font-size: 0.95rem;
+        width: 100%;
+        text-align: left;
+        font-size: 1rem;
+        padding: 10px 12px;
+        border: 1.5px solid var(--border);
+        border-radius: 6px;
+        background: var(--cream);
     }
 
     #items-table tbody td.total-cell {
-        font-size: 1rem;
+        font-size: 1.05rem;
         color: var(--wood-mid);
         font-weight: 700;
         padding-right: 0;
     }
 
     #items-table tbody td.del-cell {
+        flex-direction: row;
         justify-content: flex-end;
+        align-items: center;
         border-bottom: none;
         padding-top: 4px;
+    }
+
+    /* Hide the empty label pseudo-element on del-cell */
+    #items-table tbody td.del-cell::before {
+        display: none;
     }
 
     /* tfoot */

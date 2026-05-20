@@ -56,7 +56,7 @@ function render() {
         const isCustom = item.size !== '' && !sizes.includes(item.size);
 
         tr.innerHTML = `
-      <td data-label="Size" style="min-width:200px;">
+      <td data-label="Size">
         <select onchange="handleSizeSelect(${item.id}, this.value)" style="width:100%; margin-bottom:${isCustom ? '6px' : '0'};">
           <option value="" ${item.size === '' ? 'selected' : ''}>— Select Size —</option>
           ${optionsHtml}
