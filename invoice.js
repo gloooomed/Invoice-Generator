@@ -542,6 +542,7 @@ async function deleteInvoice(/** @type {string} */ id, /** @type {string} */ dis
         }
 
         await loadInvoiceHistory();
+        generateNextInvoiceNumber();
     } catch (error) {
         console.error('Error deleting invoice:', error);
         setStatus('Could not delete invoice. Please try again.');
