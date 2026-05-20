@@ -1,128 +1,61 @@
 # Suproan Bill Invoice Generator
 
-A lightweight, browser-based bill invoice generator with backend storage. The application runs in the browser and automatically saves PDFs to a Node.js backend server.
+A browser-based invoice generator that saves PDF invoices and history in Supabase.
 
----
+## What It Uses
 
-## Features
+- Static frontend: `index.html`, `style.css`, `invoice.js`
+- Supabase database table: `public.invoices`
+- Supabase private storage bucket: `invoice-pdfs`
+- Supabase Edge Functions:
+  - `save-invoice`
+  - `delete-invoice`
+  - `create-invoice-download`
 
-- Fill in customer name, bill number, and date in a clean billing form
-- Add and remove line items with a dropdown of preset plywood sizes plus a custom entry option
-- Automatically calculates the total quantity per row and the overall grand total
-- **Download the bill as a PDF and automatically save to backend**
-- Fully responsive layout that works on desktop, tablet, and mobile devices
-- Clear All button to reset the bill for the next customer
-- Backend API to manage invoices (save, list, download)
+## Local Setup
 
----
+### 1. Configure Supabase credentials
 
-## Project Structure
+`supabase-config.js` is **gitignored** — it is never committed to keep your keys private.
+You must create it locally from the example template:
 
-```
-suproan-invoice/
-├── index.html        — HTML markup and page structure
-├── style.css         — Stylesheet including responsive breakpoints and print styles
-├── invoice.js        — Application logic: rendering, totals, PDF export
-├── server.js         — Express backend server for PDF storage
-├── package.json      — Dependencies configuration
-├── invoices/         — Folder where PDFs are saved
-└── README.md         — Project documentation
+```bash
+# Windows (PowerShell)
+Copy-Item supabase-config.example.js supabase-config.js
+
+# macOS / Linux
+cp supabase-config.example.js supabase-config.js
 ```
 
----
+Then open `supabase-config.js` and replace the placeholder values:
 
-## Getting Started
+```js
+window.SUPROAN_SUPABASE_URL      = 'https://YOUR_PROJECT_REF.supabase.co';
+window.SUPROAN_SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+```
 
-### Frontend Only (Browser-based)
-1. Open `index.html` directly in any modern browser.
-2. Fill in the bill details and add items.
-3. Click **Download PDF** to save the bill locally.
+Find these values at: **Supabase Dashboard → Project Settings → API**
 
-### With Backend (Automatic Cloud Storage)
+> ⚠️ Never commit `supabase-config.js`. Only `supabase-config.example.js` (with placeholder values) belongs in version control.
 
-#### Prerequisites
-- Node.js (v14 or higher)
-- npm (comes with Node.js)
+### 2. Supabase project setup
 
-#### Setup
+1. Create a Supabase project.
+2. Run `supabase/schema.sql` in the Supabase SQL editor.
+3. Deploy the Edge Functions:
 
-1. **Install dependencies:**
-   ```bash
-   npm install
-   ```
+```bash
+supabase functions deploy save-invoice
+supabase functions deploy delete-invoice
+supabase functions deploy create-invoice-download
+```
 
-2. **Start the server:**
-   ```bash
-   npm start
-   ```
-   The server will run on `http://localhost:3000`
-
-3. **Open in browser:**
-   - Navigate to `http://localhost:3000`
-   - Fill in the bill details
-   - Click **Download PDF** — the file will automatically save to the backend
-
----
+The service role key is used only inside Supabase Edge Functions through the built-in `SUPABASE_SERVICE_ROLE_KEY` environment variable. Do not put it in frontend files.
 
 ## Usage
 
-| Step | Action |
-|------|--------|
-| 1 | Enter the customer name, bill number, and bill date in the Bill To section |
-| 2 | Click **Add Row** to add a line item |
-| 3 | Select a size from the dropdown or choose **Custom** to enter a size manually |
-| 4 | Enter the quantity and rate — the total quantity is calculated automatically |
-| 5 | Click **Download PDF** — invoice is saved to backend automatically |
-
----
-
-## API Endpoints
-
-### Save Invoice
-**POST** `/api/save-invoice`
-```json
-{
-  "pdfData": "base64_encoded_pdf",
-  "filename": "INV-001_CustomerName.pdf"
-}
-```
-
-### List Invoices
-**GET** `/api/invoices`
-
-Returns list of all saved invoices with metadata.
-
-### Download Invoice
-**GET** `/api/download/:filename`
-
-Downloads a specific invoice by filename.
-
----
-
-## Supported Plywood Sizes
-
-The following sizes are available in the size dropdown:
-
-| Series | Available Sizes |
-|--------|-----------------|
-| 84     | 84×42, 84×40, 84×38, 84×36, 84×34, 84×32 |
-| 81     | 81×42, 81×40, 81×38, 81×36, 81×34, 81×32 |
-| 78     | 78×38, 78×36, 78×34, 78×32, 78×30 |
-| Custom | Any size entered manually |
-
----
-
-## Technology Stack
-
-| Technology | Purpose |
-|------------|---------|
-| HTML5 | Page structure and semantic markup |
-| CSS3 | Styling, responsive layout, and print media styles |
-| Vanilla JavaScript | Invoice logic, DOM rendering, and PDF export |
-| Google Fonts | Playfair Display and DM Sans typefaces |
-
----
-
-## License
-
-© 2026 All Rights Reserved.
+1. Open the app.
+2. Fill customer, bill number, date, and line items.
+3. Click **Save & Download PDF**.
+4. The PDF downloads locally and is saved to Supabase.
+5. Previous invoices appear in **Invoice History**, with download and delete actions.

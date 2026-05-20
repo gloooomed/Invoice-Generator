@@ -4,3 +4,14 @@ invoices/
 .DS_Store
 .vscode
 
+# Supabase credentials — never commit the real config, only the .example.js template
+supabase-config.js
+
+# Supabase CLI binaries (downloaded locally, not needed in repo)
+supabase.exe
+supabase-go.exe
+supabase_cli.tar.gz
+
+# Supabase CLI local state
+supabase/.temp/
+

@@ -173,7 +173,9 @@
                     <thead>
                         <tr>
                             <th>Invoice</th>
-                            <th>Date Saved</th>
+                            <th>Customer</th>
+                            <th>Bill Date</th>
+                            <th>Created</th>
                             <th class="num">Size</th>
                             <th class="history-actions-head"></th>
                         </tr>
@@ -189,7 +191,29 @@
 
     <footer>© 2026 Supraon Enterprises · All Rights Reserved · Darbhanga, Bihar · <a href="https://supraon.vercel.app/" target="_blank" style="color:inherit; text-decoration:none;">supraon.vercel.app</a></footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.3/html2pdf.bundle.min.js"></script>
+    <script src="supabase-config.js" onerror="void 0"></script>
+    <script>
+        // If running on Vercel (no local supabase-config.js), fetch credentials from /api/config
+        (function () {
+            var alreadySet =
+                window.SUPROAN_SUPABASE_URL &&
+                !window.SUPROAN_SUPABASE_URL.includes('YOUR_PROJECT_REF');
+            if (alreadySet) return; // local file already set valid values
+
+            // Fetch from Vercel serverless endpoint
+            fetch('/api/config')
+                .then(function (r) { return r.json(); })
+                .then(function (cfg) {
+                    if (cfg && cfg.url && cfg.key) {
+                        window.SUPROAN_SUPABASE_URL      = cfg.url;
+                        window.SUPROAN_SUPABASE_ANON_KEY = cfg.key;
+                    }
+                })
+                .catch(function () { /* offline or local dev without API */ });
+        })();
+    </script>
     <script src="invoice.js"></script>
 
     <!-- ── ANTI-INSPECT GUARD ── -->

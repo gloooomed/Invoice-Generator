@@ -143,7 +143,7 @@ function clearAll() {
     render();
 }
 
-// ── DOWNLOAD PDF ──
+// ── PRINT PDF (browser print dialog) ──
 function downloadPDF() {
     const invNoEl = document.getElementById('invoice-no');
     const custNameEl = document.getElementById('cust-name');
@@ -151,8 +151,7 @@ function downloadPDF() {
     const cust = (custNameEl ? custNameEl.value.trim() : '') || '';
     const filename = cust ? `${invNo}_${cust}.pdf` : `${invNo}.pdf`;
 
-    // ── Replace Size-column selects with plain text before printing ──
-    // This removes the dropdown arrow and its gap from the printed output.
+    // Replace Size-column selects with plain text before printing
     const restored = [];
     document.querySelectorAll('#items-body tr').forEach(function (tr) {
         const sizeCell = tr.querySelector('td:first-child');
@@ -161,7 +160,6 @@ function downloadPDF() {
         const sel = sizeCell.querySelector('select');
         const customInput = sizeCell.querySelector('input[type="text"]');
 
-        // Decide what text to display
         let displayText = '';
         if (customInput && customInput.value.trim()) {
             displayText = customInput.value.trim();
@@ -171,29 +169,23 @@ function downloadPDF() {
                 ? opt.text : '\u2014';
         }
 
-        // Insert a plain text span
         const span = document.createElement('span');
         span.className = 'print-size-text';
         span.textContent = displayText;
         span.style.cssText = 'font-weight:600;font-size:0.9rem;color:var(--ink);';
         sizeCell.insertBefore(span, sizeCell.firstChild);
 
-        // Hide the interactive elements.
-        // Must use setProperty with 'important' because the @media print CSS
-        // has display:block !important on selects, which beats a plain inline style.
         if (sel) sel.style.setProperty('display', 'none', 'important');
         if (customInput) customInput.style.setProperty('display', 'none', 'important');
 
         restored.push({ sel: sel, span: span, input: customInput });
     });
 
-    // Temporarily set document title for PDF filename
     const originalTitle = document.title;
     document.title = filename;
 
     window.print();
 
-    // Restore everything after the print dialog closes
     setTimeout(function () {
         document.title = originalTitle;
         restored.forEach(function (r) {
@@ -205,15 +197,39 @@ function downloadPDF() {
 }
 
 
+// ── SUPABASE CLIENT (config-aware, handles async Vercel /api/config fetch) ──
+let supabaseClient = null;
 
+// Resolves once we know whether Supabase is configured.
+// On Vercel: waits for the /api/config fetch (injected in index.html) to set globals.
+// Locally:   resolves almost immediately (globals already set by supabase-config.js).
+const supabaseReady = new Promise(function (resolve) {
+    function tryInit() {
+        const url = window.SUPROAN_SUPABASE_URL  || '';
+        const key = window.SUPROAN_SUPABASE_ANON_KEY || '';
+        const valid =
+            url && key &&
+            !url.includes('YOUR_PROJECT_REF') &&
+            !key.includes('YOUR_SUPABASE_ANON_KEY');
+        if (valid && window.supabase) {
+            supabaseClient = window.supabase.createClient(url, key);
+        }
+        resolve();
+    }
+    // Poll for up to 3 s for the async fetch to populate the globals
+    var deadline = Date.now() + 3000;
+    function poll() {
+        var url = window.SUPROAN_SUPABASE_URL || '';
+        if ((url && !url.includes('YOUR_PROJECT_REF')) || Date.now() >= deadline) {
+            tryInit();
+        } else {
+            setTimeout(poll, 50);
+        }
+    }
+    poll();
+});
 
-// ── DATE PICKER ──
-const API_BASE_URL = (window.SUPROAN_API_BASE_URL || '').replace(/\/$/, '');
-
-function apiUrl(/** @type {string} */ path) {
-    return `${API_BASE_URL}${path}`;
-}
-
+// ── HELPERS ──
 function setStatus(/** @type {string} */ message) {
     const el = document.getElementById('history-status');
     if (el) el.textContent = message;
@@ -244,6 +260,18 @@ function getInvoiceFilename() {
     const invNo = (invNoEl ? invNoEl.value.trim() : 'Bill') || 'Bill';
     const cust = (custNameEl ? custNameEl.value.trim() : '') || '';
     return cust ? `${invNo}_${cust}.pdf` : `${invNo}.pdf`;
+}
+
+function getInvoiceMetadata() {
+    const invNoEl = /** @type {HTMLInputElement} */ (document.getElementById('invoice-no'));
+    const custNameEl = /** @type {HTMLInputElement} */ (document.getElementById('cust-name'));
+    const dateEl = /** @type {HTMLInputElement} */ (document.getElementById('invoice-date'));
+
+    return {
+        invoiceNumber: invNoEl ? invNoEl.value.trim() : '',
+        customerName: custNameEl ? custNameEl.value.trim() : '',
+        invoiceDate: dateEl ? dateEl.value.trim() : ''
+    };
 }
 
 function prepareInvoiceForPdf() {
@@ -312,20 +340,28 @@ function downloadBlob(/** @type {Blob} */ blob, /** @type {string} */ filename) 
 }
 
 async function saveInvoicePdf(/** @type {Blob} */ pdfBlob, /** @type {string} */ filename) {
+    await supabaseReady;
+    if (!supabaseClient) {
+        throw new Error('Supabase is not configured. Update supabase-config.js first.');
+    }
+
     const pdfData = await blobToBase64(pdfBlob);
-    const response = await fetch(apiUrl('/api/save-invoice'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ pdfData, filename })
+    const { data, error } = await supabaseClient.functions.invoke('save-invoice', {
+        body: {
+            pdfData,
+            filename,
+            ...getInvoiceMetadata()
+        }
     });
 
-    const data = await response.json().catch(function () { return {}; });
-    if (!response.ok) {
-        throw new Error(data.error || 'Failed to save invoice');
+    if (error || data?.error) {
+        throw new Error(data?.error || error?.message || 'Failed to save invoice');
     }
+
     return data;
 }
 
+// Override the print-only downloadPDF with the save-and-download version
 downloadPDF = async function () {
     const filename = getInvoiceFilename();
     const restoreInvoice = prepareInvoiceForPdf();
@@ -343,7 +379,7 @@ downloadPDF = async function () {
             button.disabled = true;
             button.textContent = 'Saving...';
         }
-        setStatus('Saving invoice to backend...');
+        setStatus('Saving invoice to Supabase...');
 
         const options = {
             margin: 0,
@@ -377,20 +413,27 @@ downloadPDF = async function () {
 };
 
 async function loadInvoiceHistory() {
+    await supabaseReady;
     const tbody = document.getElementById('invoice-history-body');
     if (!tbody) return;
+
+    if (!supabaseClient) {
+        setStatus('Supabase not configured — check your environment variables.');
+        return;
+    }
 
     setStatus('Loading saved invoices...');
     tbody.innerHTML = '';
 
     try {
-        const response = await fetch(apiUrl('/api/invoices'));
-        const data = await response.json();
-        if (!response.ok) {
-            throw new Error(data.error || 'Failed to fetch invoices');
-        }
+        const { data, error } = await supabaseClient
+            .from('invoices')
+            .select('id, filename, size_bytes, customer_name, invoice_number, invoice_date, created_at')
+            .order('created_at', { ascending: false });
 
-        const invoices = Array.isArray(data.invoices) ? data.invoices : [];
+        if (error) throw error;
+
+        const invoices = Array.isArray(data) ? data : [];
         if (invoices.length === 0) {
             setStatus('No saved invoices yet.');
             return;
@@ -398,16 +441,17 @@ async function loadInvoiceHistory() {
 
         invoices.forEach(function (invoice) {
             const tr = document.createElement('tr');
-            const encodedFilename = encodeURIComponent(invoice.filename);
             const safeDisplayName = invoice.filename.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
             tr.innerHTML = `
                 <td><div class="history-filename">${invoice.filename}</div></td>
-                <td class="history-date">${formatSavedDate(invoice.created)}</td>
-                <td class="num">${formatBytes(invoice.size)}</td>
+                <td>${invoice.customer_name || '-'}</td>
+                <td class="history-date">${invoice.invoice_date || '-'}</td>
+                <td class="history-date">${formatSavedDate(invoice.created_at)}</td>
+                <td class="num">${formatBytes(invoice.size_bytes)}</td>
                 <td>
                     <div class="history-actions">
-                        <a class="history-link" href="${apiUrl('/api/download/' + encodedFilename)}">Download</a>
-                        <button class="history-delete-btn" type="button" onclick="deleteInvoice('${encodedFilename}', '${safeDisplayName}')">Delete</button>
+                        <button class="history-link" type="button" onclick="downloadSavedInvoice('${invoice.id}')">Download</button>
+                        <button class="history-delete-btn" type="button" onclick="deleteInvoice('${invoice.id}', '${safeDisplayName}')">Delete</button>
                     </div>
                 </td>
             `;
@@ -417,22 +461,52 @@ async function loadInvoiceHistory() {
         setStatus(`${invoices.length} saved invoice${invoices.length === 1 ? '' : 's'}.`);
     } catch (error) {
         console.error('Error loading invoice history:', error);
-        setStatus('Could not load invoice history. Make sure the backend is running.');
+        setStatus('Could not load invoice history. Check your Supabase setup.');
     }
 }
 
-async function deleteInvoice(/** @type {string} */ encodedFilename, /** @type {string} */ displayName) {
+async function downloadSavedInvoice(/** @type {string} */ id) {
+    await supabaseReady;
+    if (!supabaseClient) {
+        alert('Supabase is not configured.');
+        return;
+    }
+
+    try {
+        const { data, error } = await supabaseClient.functions.invoke('create-invoice-download', {
+            body: { id }
+        });
+
+        if (error || data?.error || !data?.url) {
+            throw new Error(data?.error || error?.message || 'Failed to create download link');
+        }
+
+        window.open(data.url, '_blank', 'noopener');
+    } catch (error) {
+        console.error('Error creating download link:', error);
+        alert(error.message || 'Failed to create download link.');
+    }
+}
+
+async function deleteInvoice(/** @type {string} */ id, /** @type {string} */ displayName) {
     if (!confirm(`Delete ${displayName}?`)) return;
+
+    await supabaseReady;
+    if (!supabaseClient) {
+        alert('Supabase is not configured.');
+        return;
+    }
 
     setStatus('Deleting invoice...');
     try {
-        const response = await fetch(apiUrl('/api/invoices/' + encodedFilename), {
-            method: 'DELETE'
+        const { data, error } = await supabaseClient.functions.invoke('delete-invoice', {
+            body: { id }
         });
-        const data = await response.json().catch(function () { return {}; });
-        if (!response.ok) {
-            throw new Error(data.error || 'Failed to delete invoice');
+
+        if (error || data?.error) {
+            throw new Error(data?.error || error?.message || 'Failed to delete invoice');
         }
+
         await loadInvoiceHistory();
     } catch (error) {
         console.error('Error deleting invoice:', error);
@@ -441,6 +515,7 @@ async function deleteInvoice(/** @type {string} */ encodedFilename, /** @type {s
     }
 }
 
+// ── DATE PICKER ──
 function handleDatePick(/** @type {string} */ isoDate) {
     if (!isoDate) return;
     const [y, m, d] = isoDate.split('-');
