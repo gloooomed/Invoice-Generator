@@ -141,6 +141,7 @@ function clearAll() {
     const custName = /** @type {HTMLInputElement} */ (document.getElementById('cust-name'));
     if (custName) custName.value = '';
     render();
+    generateNextInvoiceNumber();
 }
 
 // ── PRINT PDF (browser print dialog) ──
@@ -561,6 +562,52 @@ function openDatePicker() {
     }
 }
 
+// ── AUTO-GENERATE INVOICE NUMBER ──
+async function generateNextInvoiceNumber() {
+    const defaultInvoice = `BILL-${new Date().getFullYear()}-001`;
+    const invoiceInput = document.getElementById('invoice-no');
+    if (!invoiceInput) return;
+
+    await supabaseReady;
+    if (!supabaseClient) {
+        invoiceInput.value = defaultInvoice;
+        updateInvoiceNumber(defaultInvoice);
+        return;
+    }
+
+    try {
+        const { data, error } = await supabaseClient
+            .from('invoices')
+            .select('invoice_number')
+            .order('created_at', { ascending: false })
+            .limit(1);
+
+        if (error) throw error;
+
+        if (data && data.length > 0 && data[0].invoice_number) {
+            const lastInvoice = data[0].invoice_number;
+            const parts = lastInvoice.split('-');
+            if (parts.length === 3) {
+                const prefix = parts[0];
+                const year = parts[1];
+                const num = parseInt(parts[2], 10);
+                if (!isNaN(num)) {
+                    const nextNum = (num + 1).toString().padStart(3, '0');
+                    const nextInvoice = `${prefix}-${year}-${nextNum}`;
+                    invoiceInput.value = nextInvoice;
+                    updateInvoiceNumber(nextInvoice);
+                    return;
+                }
+            }
+        }
+    } catch (e) {
+        console.warn('Could not fetch last invoice number, using default:', e);
+    }
+
+    invoiceInput.value = defaultInvoice;
+    updateInvoiceNumber(defaultInvoice);
+}
+
 // ── INIT ──
 (function init() {
     const dateEl = /** @type {HTMLInputElement} */ (document.getElementById('invoice-date'));
@@ -575,5 +622,8 @@ function openDatePicker() {
 
     // Start with 3 empty rows
     addRow(); addRow(); addRow();
+    
+    // Auto-generate next invoice number and load history
+    generateNextInvoiceNumber();
     loadInvoiceHistory();
 })();
