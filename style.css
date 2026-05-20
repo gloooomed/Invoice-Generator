@@ -390,6 +390,9 @@ main {
         padding: 14px;
         font-size: 1rem;
         border-radius: 8px;
+        background: var(--gold);
+        color: var(--white);
+        border: none;
     }
 
     #items-table tfoot #total-row td {
