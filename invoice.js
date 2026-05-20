@@ -134,14 +134,19 @@ function updateInvoiceNumber(/** @type {string} */ val) {
     if (el) el.textContent = val || '—';
 }
 
-function clearAll() {
-    if (!confirm('Clear all items and reset the invoice?')) return;
+function resetForm() {
     items = [];
     nextId = 1;
     const custName = /** @type {HTMLInputElement} */ (document.getElementById('cust-name'));
     if (custName) custName.value = '';
     render();
+    addRow(); addRow(); addRow();
     generateNextInvoiceNumber();
+}
+
+function clearAll() {
+    if (!confirm('Clear all items and reset the invoice?')) return;
+    resetForm();
 }
 
 // ── PRINT PDF (browser print dialog) ──
@@ -417,6 +422,7 @@ downloadPDF = async function () {
             await saveInvoicePdf(pdfBlob, filename);
             setStatus('Invoice saved. Refreshing history...');
             await loadInvoiceHistory();
+            resetForm(); // Auto-empty the form and generate new bill number for the next customer
         } catch (supabaseError) {
             console.warn('Could not save invoice to Supabase:', supabaseError);
             setStatus('PDF downloaded. Invoice history save skipped (local dev/unconfigured).');
