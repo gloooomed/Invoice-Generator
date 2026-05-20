@@ -27,7 +27,7 @@ function getSqFt(/** @type {string} */ size) {
 
 function getTotalPrice(/** @type {typeof items[0]} */ item) {
     const sf = getSqFt(item.size);
-    return +(sf * item.rate).toFixed(2);
+    return +(item.qty * item.rate * sf).toFixed(2);
 }
 
 function render() {
