@@ -71,13 +71,13 @@ function render() {
           oninput="updateField(${item.id},'qty',+this.value)"
           style="text-align:center;" />
       </td>
-      <td class="sqft-cell" data-label="Sq. Ft." style="text-align:center;">${sqft > 0 ? sqft.toFixed(2) : '—'}</td>
+      <td class="sqft-cell" data-label="Sq. Ft." style="text-align:center;"><span class="val-wrap">${sqft > 0 ? sqft.toFixed(2) : '—'}</span></td>
       <td data-label="Rate (₹)" style="text-align:center;">
         <input type="number" value="${item.rate || ''}" min="0" placeholder="0"
           oninput="updateField(${item.id},'rate',+this.value)"
           style="text-align:center;" />
       </td>
-      <td class="total-cell" data-label="Total Price">${totalPrice > 0 ? formatINR(totalPrice) : '—'}</td>
+      <td class="total-cell" data-label="Total Price"><span class="val-wrap">${totalPrice > 0 ? formatINR(totalPrice) : '—'}</span></td>
       <td class="del-cell" data-label="">
         <button class="del-btn" onclick="removeRow(${item.id})" title="Remove row">✕</button>
       </td>

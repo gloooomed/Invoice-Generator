@@ -334,8 +334,9 @@ main {
     }
 
     #items-table tbody td input,
-    #items-table tbody td select {
-        text-align: right !important;
+    #items-table tbody td select,
+    #items-table tbody td .val-wrap {
+        text-align: center !important;
         flex: 1;
         max-width: 58%;
         font-size: 0.95rem;
@@ -349,9 +350,25 @@ main {
     }
 
     #items-table tbody td.del-cell {
-        justify-content: flex-end;
+        justify-content: center;
         border-bottom: none;
-        padding-top: 4px;
+        padding-top: 12px;
+        padding-bottom: 6px;
+    }
+    
+    #items-table tbody td.del-cell::before {
+        display: none;
+    }
+
+    #items-table tbody td.del-cell .del-btn {
+        width: 100%;
+        background: #ffebe5;
+        color: #d84b4b;
+        border: 1px solid #ffc8bc;
+        padding: 10px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 8px;
     }
 
     /* tfoot */
