@@ -2,3 +2,5 @@ node_modules/
 invoices/
 .env
 .DS_Store
+.vscode
+
