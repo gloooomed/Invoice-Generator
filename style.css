@@ -284,14 +284,22 @@ main {
         border-radius: 8px;
     }
 
-    /* Hide desktop table header */
-    #items-table thead {
+    /* Hide desktop table header and colgroup */
+    #items-table thead,
+    #items-table colgroup {
         display: none;
+    }
+
+    /* Force block layout on table elements to prevent native table column rendering */
+    #items-table,
+    #items-table tbody,
+    #items-table tbody tr {
+        display: block;
+        width: 100%;
     }
 
     /* Each row becomes a card */
     #items-table tbody tr {
-        display: block;
         border: 1.5px solid var(--border);
         border-radius: 8px;
         margin-bottom: 10px;
@@ -538,15 +546,15 @@ thead th {
     letter-spacing: 2px;
     text-transform: uppercase;
     color: var(--gold-light);
-    text-align: left;
+    text-align: center;
 }
 
 thead th:last-child {
-    text-align: right;
+    text-align: center;
 }
 
 thead th.num {
-    text-align: right;
+    text-align: center;
 }
 
 tbody tr {
@@ -608,10 +616,10 @@ tbody td.row-num {
 }
 
 tbody td.total-cell {
-    text-align: right;
+    text-align: center;
     font-weight: 600;
     color: var(--wood-mid);
-    padding-right: 16px;
+    padding-right: 0;
     font-size: 0.94rem;
 }
 

@@ -56,8 +56,8 @@ function render() {
         const isCustom = item.size !== '' && !sizes.includes(item.size);
 
         tr.innerHTML = `
-      <td data-label="Size" style="min-width:200px;">
-        <select onchange="handleSizeSelect(${item.id}, this.value)" style="width:100%; margin-bottom:${isCustom ? '6px' : '0'};">
+      <td data-label="Size" style="min-width:200px; text-align:center;">
+        <select onchange="handleSizeSelect(${item.id}, this.value)" style="width:100%; text-align:center; margin-bottom:${isCustom ? '6px' : '0'};">
           <option value="" ${item.size === '' ? 'selected' : ''}>— Select Size —</option>
           ${optionsHtml}
           <option value="__custom__" ${isCustom ? 'selected' : ''}>Custom…</option>
@@ -66,16 +66,16 @@ function render() {
           oninput="updateField(${item.id},'size',this.value)"
           style="width:100%; margin-top:4px;" />` : ''}
       </td>
-      <td data-label="Quantity">
+      <td data-label="Quantity" style="text-align:center;">
         <input type="number" value="${item.qty || ''}" min="0" placeholder="0"
           oninput="updateField(${item.id},'qty',+this.value)"
-          style="text-align:right;" />
+          style="text-align:center;" />
       </td>
-      <td class="sqft-cell" data-label="Sq. Ft.">${sqft > 0 ? sqft.toFixed(2) : '—'}</td>
-      <td data-label="Rate (₹)">
+      <td class="sqft-cell" data-label="Sq. Ft." style="text-align:center;">${sqft > 0 ? sqft.toFixed(2) : '—'}</td>
+      <td data-label="Rate (₹)" style="text-align:center;">
         <input type="number" value="${item.rate || ''}" min="0" placeholder="0"
           oninput="updateField(${item.id},'rate',+this.value)"
-          style="text-align:right;" />
+          style="text-align:center;" />
       </td>
       <td class="total-cell" data-label="Total Price">${totalPrice > 0 ? formatINR(totalPrice) : '—'}</td>
       <td class="del-cell" data-label="">
