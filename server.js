@@ -18,6 +18,22 @@ if (!fs.existsSync(invoicesDir)) {
     fs.mkdirSync(invoicesDir, { recursive: true });
 }
 
+function sanitizeFilename(filename) {
+    return filename.replace(/[^a-zA-Z0-9._-]/g, '_');
+}
+
+function getInvoicePath(filename) {
+    const cleanFilename = sanitizeFilename(filename);
+    const filepath = path.resolve(invoicesDir, cleanFilename);
+    const resolvedInvoicesDir = path.resolve(invoicesDir);
+
+    if (path.dirname(filepath) !== resolvedInvoicesDir) {
+        return null;
+    }
+
+    return { cleanFilename, filepath };
+}
+
 // API endpoint to save PDF
 app.post('/api/save-invoice', (req, res) => {
     try {
@@ -28,8 +44,11 @@ app.post('/api/save-invoice', (req, res) => {
         }
 
         // Sanitize filename
-        const cleanFilename = filename.replace(/[^a-zA-Z0-9._-]/g, '_');
-        const filepath = path.join(invoicesDir, cleanFilename);
+        const invoicePath = getInvoicePath(filename);
+        if (!invoicePath) {
+            return res.status(403).json({ error: 'Access denied' });
+        }
+        const { cleanFilename, filepath } = invoicePath;
 
         // Convert base64 to buffer
         const buffer = Buffer.from(pdfData, 'base64');
@@ -78,13 +97,11 @@ app.get('/api/invoices', (req, res) => {
 // Download invoice
 app.get('/api/download/:filename', (req, res) => {
     try {
-        const filename = req.params.filename.replace(/[^a-zA-Z0-9._-]/g, '_');
-        const filepath = path.join(invoicesDir, filename);
-
-        // Security: prevent directory traversal
-        if (!filepath.startsWith(invoicesDir)) {
+        const invoicePath = getInvoicePath(req.params.filename);
+        if (!invoicePath) {
             return res.status(403).json({ error: 'Access denied' });
         }
+        const { filepath } = invoicePath;
 
         if (!fs.existsSync(filepath)) {
             return res.status(404).json({ error: 'File not found' });
@@ -93,6 +110,36 @@ app.get('/api/download/:filename', (req, res) => {
         res.download(filepath);
     } catch (error) {
         res.status(500).json({ error: 'Failed to download file' });
+    }
+});
+
+// Delete invoice
+app.delete('/api/invoices/:filename', (req, res) => {
+    try {
+        const invoicePath = getInvoicePath(req.params.filename);
+        if (!invoicePath) {
+            return res.status(403).json({ error: 'Access denied' });
+        }
+        const { cleanFilename, filepath } = invoicePath;
+
+        if (!fs.existsSync(filepath)) {
+            return res.status(404).json({ error: 'File not found' });
+        }
+
+        fs.unlinkSync(filepath);
+
+        const timestamp = new Date().toISOString();
+        const logEntry = `${timestamp} - Deleted: ${cleanFilename}\n`;
+        fs.appendFileSync(path.join(invoicesDir, 'log.txt'), logEntry);
+
+        res.json({
+            success: true,
+            message: 'Invoice deleted successfully',
+            filename: cleanFilename
+        });
+    } catch (error) {
+        console.error('Error deleting invoice:', error);
+        res.status(500).json({ error: 'Failed to delete invoice', details: error.message });
     }
 });
 

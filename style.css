@@ -380,6 +380,15 @@ main {
         padding: 14px;
         font-size: 0.95rem;
     }
+
+    .history-header {
+        flex-direction: column;
+    }
+
+    .history-refresh-btn {
+        width: 100%;
+        text-align: center;
+    }
 }
 
 label {
@@ -765,6 +774,118 @@ tfoot tr td {
 }
 
 /* ── NOTES ───────────────────────────────────────────────── */
+/* History */
+.history-section {
+    margin-top: 36px;
+}
+
+.history-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.history-header .section-title {
+    flex: 1;
+}
+
+.history-refresh-btn {
+    padding: 9px 16px;
+}
+
+.history-status {
+    min-height: 20px;
+    margin: -4px 0 12px;
+    color: var(--muted);
+    font-size: 0.82rem;
+}
+
+.history-table-wrapper {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    overflow-x: auto;
+    box-shadow: 0 2px 16px rgba(44, 26, 14, 0.06);
+}
+
+.history-table {
+    min-width: 680px;
+}
+
+.history-table th,
+.history-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--cream-deep);
+    vertical-align: middle;
+}
+
+.history-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.history-table td {
+    font-size: 0.86rem;
+}
+
+.history-table .num {
+    text-align: right;
+}
+
+.history-filename {
+    font-weight: 700;
+    color: var(--wood-dark);
+    overflow-wrap: anywhere;
+}
+
+.history-date {
+    color: var(--muted);
+    white-space: nowrap;
+}
+
+.history-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.history-link,
+.history-delete-btn {
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    background: var(--cream);
+    color: var(--wood-mid);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 34px;
+    padding: 8px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.history-link:hover,
+.history-delete-btn:hover {
+    border-color: var(--wood-warm);
+    background: var(--cream-deep);
+    color: var(--wood-dark);
+}
+
+.history-delete-btn:hover {
+    border-color: #b03030;
+    color: #b03030;
+    background: #fdf0f0;
+}
+
+body.pdf-exporting .actions,
+body.pdf-exporting .history-section,
+body.pdf-exporting #passcode-overlay {
+    display: none !important;
+}
+
 .notes-area {
     margin-top: 36px;
 }
@@ -809,6 +930,7 @@ footer {
 
     /* Hide interactive UI elements */
     .actions,
+    .history-section,
     .add-row-btn,
     .del-btn,
     .del-cell,
@@ -1195,4 +1317,4 @@ footer {
     #passcode-overlay {
         display: none !important;
     }
-}
+}

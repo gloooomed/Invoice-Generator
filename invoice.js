@@ -208,6 +208,239 @@ function downloadPDF() {
 
 
 // ── DATE PICKER ──
+const API_BASE_URL = (window.SUPROAN_API_BASE_URL || '').replace(/\/$/, '');
+
+function apiUrl(/** @type {string} */ path) {
+    return `${API_BASE_URL}${path}`;
+}
+
+function setStatus(/** @type {string} */ message) {
+    const el = document.getElementById('history-status');
+    if (el) el.textContent = message;
+}
+
+function formatBytes(/** @type {number} */ bytes) {
+    if (!Number.isFinite(bytes)) return '-';
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function formatSavedDate(/** @type {string | Date} */ value) {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '-';
+    return date.toLocaleString('en-IN', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+function getInvoiceFilename() {
+    const invNoEl = document.getElementById('invoice-no');
+    const custNameEl = document.getElementById('cust-name');
+    const invNo = (invNoEl ? invNoEl.value.trim() : 'Bill') || 'Bill';
+    const cust = (custNameEl ? custNameEl.value.trim() : '') || '';
+    return cust ? `${invNo}_${cust}.pdf` : `${invNo}.pdf`;
+}
+
+function prepareInvoiceForPdf() {
+    const restored = [];
+    document.querySelectorAll('#items-body tr').forEach(function (tr) {
+        const sizeCell = tr.querySelector('td:first-child');
+        if (!sizeCell) return;
+
+        const sel = sizeCell.querySelector('select');
+        const customInput = sizeCell.querySelector('input[type="text"]');
+
+        let displayText = '';
+        if (customInput && customInput.value.trim()) {
+            displayText = customInput.value.trim();
+        } else if (sel) {
+            const opt = sel.options[sel.selectedIndex];
+            displayText = (opt && opt.value && opt.value !== '' && opt.value !== '__custom__')
+                ? opt.text : '\u2014';
+        }
+
+        const span = document.createElement('span');
+        span.className = 'print-size-text';
+        span.textContent = displayText;
+        span.style.cssText = 'font-weight:600;font-size:0.9rem;color:var(--ink);';
+        sizeCell.insertBefore(span, sizeCell.firstChild);
+
+        if (sel) sel.style.setProperty('display', 'none', 'important');
+        if (customInput) customInput.style.setProperty('display', 'none', 'important');
+
+        restored.push({ sel: sel, span: span, input: customInput });
+    });
+
+    document.body.classList.add('pdf-exporting');
+
+    return function restoreInvoiceAfterPdf() {
+        document.body.classList.remove('pdf-exporting');
+        restored.forEach(function (r) {
+            r.span.remove();
+            if (r.sel) r.sel.style.removeProperty('display');
+            if (r.input) r.input.style.removeProperty('display');
+        });
+    };
+}
+
+function blobToBase64(/** @type {Blob} */ blob) {
+    return new Promise(function (resolve, reject) {
+        const reader = new FileReader();
+        reader.onloadend = function () {
+            const result = String(reader.result || '');
+            resolve(result.split(',')[1] || '');
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+    });
+}
+
+function downloadBlob(/** @type {Blob} */ blob, /** @type {string} */ filename) {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+}
+
+async function saveInvoicePdf(/** @type {Blob} */ pdfBlob, /** @type {string} */ filename) {
+    const pdfData = await blobToBase64(pdfBlob);
+    const response = await fetch(apiUrl('/api/save-invoice'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pdfData, filename })
+    });
+
+    const data = await response.json().catch(function () { return {}; });
+    if (!response.ok) {
+        throw new Error(data.error || 'Failed to save invoice');
+    }
+    return data;
+}
+
+downloadPDF = async function () {
+    const filename = getInvoiceFilename();
+    const restoreInvoice = prepareInvoiceForPdf();
+    const button = /** @type {HTMLButtonElement} */ (document.getElementById('btn-download-pdf'));
+    const originalButtonText = button ? button.textContent : '';
+
+    if (!window.html2pdf) {
+        restoreInvoice();
+        alert('PDF generator failed to load. Please check your internet connection and try again.');
+        return;
+    }
+
+    try {
+        if (button) {
+            button.disabled = true;
+            button.textContent = 'Saving...';
+        }
+        setStatus('Saving invoice to backend...');
+
+        const options = {
+            margin: 0,
+            filename: filename,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
+            jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' },
+            pagebreak: { mode: ['css', 'legacy'] }
+        };
+
+        const pdfBlob = await window.html2pdf()
+            .set(options)
+            .from(document.body)
+            .outputPdf('blob');
+
+        await saveInvoicePdf(pdfBlob, filename);
+        downloadBlob(pdfBlob, filename);
+        setStatus('Invoice saved. Refreshing history...');
+        await loadInvoiceHistory();
+    } catch (error) {
+        console.error('Error saving invoice:', error);
+        setStatus('Could not save invoice. Please try again.');
+        alert(error.message || 'Failed to save invoice.');
+    } finally {
+        restoreInvoice();
+        if (button) {
+            button.disabled = false;
+            button.textContent = originalButtonText || 'Save & Download PDF';
+        }
+    }
+};
+
+async function loadInvoiceHistory() {
+    const tbody = document.getElementById('invoice-history-body');
+    if (!tbody) return;
+
+    setStatus('Loading saved invoices...');
+    tbody.innerHTML = '';
+
+    try {
+        const response = await fetch(apiUrl('/api/invoices'));
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.error || 'Failed to fetch invoices');
+        }
+
+        const invoices = Array.isArray(data.invoices) ? data.invoices : [];
+        if (invoices.length === 0) {
+            setStatus('No saved invoices yet.');
+            return;
+        }
+
+        invoices.forEach(function (invoice) {
+            const tr = document.createElement('tr');
+            const encodedFilename = encodeURIComponent(invoice.filename);
+            const safeDisplayName = invoice.filename.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+            tr.innerHTML = `
+                <td><div class="history-filename">${invoice.filename}</div></td>
+                <td class="history-date">${formatSavedDate(invoice.created)}</td>
+                <td class="num">${formatBytes(invoice.size)}</td>
+                <td>
+                    <div class="history-actions">
+                        <a class="history-link" href="${apiUrl('/api/download/' + encodedFilename)}">Download</a>
+                        <button class="history-delete-btn" type="button" onclick="deleteInvoice('${encodedFilename}', '${safeDisplayName}')">Delete</button>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        setStatus(`${invoices.length} saved invoice${invoices.length === 1 ? '' : 's'}.`);
+    } catch (error) {
+        console.error('Error loading invoice history:', error);
+        setStatus('Could not load invoice history. Make sure the backend is running.');
+    }
+}
+
+async function deleteInvoice(/** @type {string} */ encodedFilename, /** @type {string} */ displayName) {
+    if (!confirm(`Delete ${displayName}?`)) return;
+
+    setStatus('Deleting invoice...');
+    try {
+        const response = await fetch(apiUrl('/api/invoices/' + encodedFilename), {
+            method: 'DELETE'
+        });
+        const data = await response.json().catch(function () { return {}; });
+        if (!response.ok) {
+            throw new Error(data.error || 'Failed to delete invoice');
+        }
+        await loadInvoiceHistory();
+    } catch (error) {
+        console.error('Error deleting invoice:', error);
+        setStatus('Could not delete invoice. Please try again.');
+        alert(error.message || 'Failed to delete invoice.');
+    }
+}
+
 function handleDatePick(/** @type {string} */ isoDate) {
     if (!isoDate) return;
     const [y, m, d] = isoDate.split('-');
@@ -240,4 +473,5 @@ function openDatePicker() {
 
     // Start with 3 empty rows
     addRow(); addRow(); addRow();
+    loadInvoiceHistory();
 })();
