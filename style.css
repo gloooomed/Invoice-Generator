@@ -467,6 +467,71 @@ main {
         text-align: center;
     }
 
+    /* ── HISTORY TABLE → CARD LAYOUT on mobile ── */
+    .history-table {
+        min-width: 0 !important;
+        width: 100% !important;
+    }
+
+    .history-table thead {
+        display: none;
+    }
+
+    .history-table,
+    .history-table tbody,
+    .history-table tbody tr {
+        display: block;
+        width: 100%;
+    }
+
+    .history-table tbody tr {
+        border: 1.5px solid var(--border);
+        border-radius: 8px;
+        margin-bottom: 10px;
+        padding: 12px;
+        background: var(--white);
+        box-shadow: 0 1px 6px rgba(44, 26, 14, 0.06);
+    }
+
+    .history-table tbody td {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 6px 0;
+        border-bottom: 1px solid var(--cream-deep);
+        text-align: right;
+    }
+
+    .history-table tbody td:last-child {
+        border-bottom: none;
+    }
+
+    .history-table tbody td::before {
+        content: attr(data-label);
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        color: var(--muted);
+        flex-shrink: 0;
+        margin-right: 10px;
+        text-align: left;
+    }
+
+    .history-table tbody td.history-actions-cell {
+        justify-content: center;
+        padding-top: 10px;
+    }
+
+    .history-table tbody td.history-actions-cell::before {
+        display: none;
+    }
+
+    .history-actions {
+        width: 100%;
+        justify-content: center;
+    }
+
     /* Passcode card — tighter padding on small phones */
     #passcode-card {
         padding: 32px 20px 28px;

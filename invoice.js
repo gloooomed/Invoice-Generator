@@ -477,12 +477,12 @@ async function loadInvoiceHistory() {
             const tr = document.createElement('tr');
             const safeDisplayName = invoice.filename.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
             tr.innerHTML = `
-                <td><div class="history-filename">${invoice.filename}</div></td>
-                <td>${invoice.customer_name || '-'}</td>
-                <td class="history-date">${invoice.invoice_date || '-'}</td>
-                <td class="history-date">${formatSavedDate(invoice.created_at)}</td>
-                <td class="num">${formatBytes(invoice.size_bytes)}</td>
-                <td>
+                <td data-label="Invoice"><div class="history-filename">${invoice.filename}</div></td>
+                <td data-label="Customer">${invoice.customer_name || '-'}</td>
+                <td class="history-date" data-label="Bill Date">${invoice.invoice_date || '-'}</td>
+                <td class="history-date" data-label="Created">${formatSavedDate(invoice.created_at)}</td>
+                <td class="num" data-label="Size">${formatBytes(invoice.size_bytes)}</td>
+                <td class="history-actions-cell">
                     <div class="history-actions">
                         <button class="history-link" type="button" onclick="downloadSavedInvoice('${invoice.id}')">Download</button>
                         <button class="history-delete-btn" type="button" onclick="deleteInvoice('${invoice.id}', '${safeDisplayName}')">Delete</button>
