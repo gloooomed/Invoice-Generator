@@ -335,7 +335,7 @@ main {
 
     #items-table tbody td input,
     #items-table tbody td select {
-        text-align: right;
+        text-align: right !important;
         flex: 1;
         max-width: 58%;
         font-size: 0.95rem;
@@ -361,6 +361,18 @@ main {
 
     #items-table tfoot td {
         display: block;
+        background: transparent;
+        border-top: none;
+        padding: 16px 0;
+    }
+
+    .add-row-btn {
+        display: block;
+        width: 100%;
+        text-align: center;
+        padding: 14px;
+        font-size: 1rem;
+        border-radius: 8px;
     }
 
     #items-table tfoot #total-row td {
