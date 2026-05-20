@@ -185,7 +185,7 @@ function populatePrintTemplate() {
             <td style="text-align: center;">${item.qty || 0}</td>
             <td style="text-align: center;">${sqft > 0 ? sqft.toFixed(2) : '—'}</td>
             <td style="text-align: center;">${item.rate > 0 ? formatINR(item.rate).replace('₹ ', '') : '—'}</td>
-            <td style="text-align: center; font-weight: 600;">${totalPrice > 0 ? formatINR(totalPrice) : '—'}</td>
+            <td style="text-align: center; font-weight: 600; white-space: nowrap;">${totalPrice > 0 ? formatINR(totalPrice) : '—'}</td>
         `;
         tbody.appendChild(tr);
     });
