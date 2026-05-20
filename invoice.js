@@ -144,56 +144,72 @@ function clearAll() {
 }
 
 // ── PRINT PDF (browser print dialog) ──
-function downloadPDF() {
-    const invNoEl = document.getElementById('invoice-no');
-    const custNameEl = document.getElementById('cust-name');
-    const invNo = (invNoEl ? invNoEl.value.trim() : 'Bill') || 'Bill';
-    const cust = (custNameEl ? custNameEl.value.trim() : '') || '';
-    const filename = cust ? `${invNo}_${cust}.pdf` : `${invNo}.pdf`;
+// ── POPULATE PRINT TEMPLATE ──
+function populatePrintTemplate() {
+    const custName = (document.getElementById('cust-name')?.value || '').trim() || '—';
+    const invoiceNo = (document.getElementById('invoice-no')?.value || '').trim() || '—';
+    const invoiceDate = (document.getElementById('invoice-date')?.value || '').trim() || '—';
 
-    // Replace Size-column selects with plain text before printing
-    const restored = [];
-    document.querySelectorAll('#items-body tr').forEach(function (tr) {
-        const sizeCell = tr.querySelector('td:first-child');
-        if (!sizeCell) return;
+    const printCustName = document.getElementById('print-cust-name');
+    const printInvoiceNo = document.getElementById('print-invoice-no');
+    const printInvoiceDate = document.getElementById('print-invoice-date');
 
-        const sel = sizeCell.querySelector('select');
-        const customInput = sizeCell.querySelector('input[type="text"]');
+    if (printCustName) printCustName.textContent = custName;
+    if (printInvoiceNo) printInvoiceNo.textContent = invoiceNo;
+    if (printInvoiceDate) printInvoiceDate.textContent = invoiceDate;
 
-        let displayText = '';
-        if (customInput && customInput.value.trim()) {
-            displayText = customInput.value.trim();
-        } else if (sel) {
-            const opt = sel.options[sel.selectedIndex];
-            displayText = (opt && opt.value && opt.value !== '' && opt.value !== '__custom__')
-                ? opt.text : '\u2014';
+    const tbody = document.getElementById('print-items-body');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    let validItemCount = 0;
+    items.forEach(function (item) {
+        // Skip items that have no size, quantity, and rate
+        if (!item.size && !item.qty && !item.rate) {
+            return;
         }
 
-        const span = document.createElement('span');
-        span.className = 'print-size-text';
-        span.textContent = displayText;
-        span.style.cssText = 'font-weight:600;font-size:0.9rem;color:var(--ink);';
-        sizeCell.insertBefore(span, sizeCell.firstChild);
+        let sizeText = item.size;
+        if (sizeText === '__custom__') {
+            sizeText = 'Custom Size';
+        }
 
-        if (sel) sel.style.setProperty('display', 'none', 'important');
-        if (customInput) customInput.style.setProperty('display', 'none', 'important');
+        validItemCount++;
+        const sqft = getSqFt(item.size);
+        const totalPrice = getTotalPrice(item);
 
-        restored.push({ sel: sel, span: span, input: customInput });
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td style="text-align: center;">${validItemCount}</td>
+            <td style="text-align: left; font-weight: 600;">${sizeText || '—'}</td>
+            <td style="text-align: center;">${item.qty || 0}</td>
+            <td style="text-align: center;">${sqft > 0 ? sqft.toFixed(2) : '—'}</td>
+            <td style="text-align: center;">${item.rate > 0 ? formatINR(item.rate).replace('₹ ', '') : '—'}</td>
+            <td style="text-align: center; font-weight: 600;">${totalPrice > 0 ? formatINR(totalPrice) : '—'}</td>
+        `;
+        tbody.appendChild(tr);
     });
 
-    const originalTitle = document.title;
-    document.title = filename;
+    if (validItemCount === 0) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td colspan="6" style="text-align: center; color: var(--muted); font-style: italic; padding: 16px;">No items added</td>
+        `;
+        tbody.appendChild(tr);
+    }
 
+    const grand = items.reduce((s, i) => s + getTotalPrice(i), 0);
+    const printGrandTotal = document.getElementById('print-grand-total');
+    if (printGrandTotal) printGrandTotal.textContent = formatINR(grand);
+}
+
+// Register browser print hook
+window.addEventListener('beforeprint', populatePrintTemplate);
+
+// ── PRINT PDF (browser print dialog fallback) ──
+function downloadPDF() {
+    populatePrintTemplate();
     window.print();
-
-    setTimeout(function () {
-        document.title = originalTitle;
-        restored.forEach(function (r) {
-            r.span.remove();
-            if (r.sel) r.sel.style.removeProperty('display');
-            if (r.input) r.input.style.removeProperty('display');
-        });
-    }, 1000);
 }
 
 
@@ -274,48 +290,6 @@ function getInvoiceMetadata() {
     };
 }
 
-function prepareInvoiceForPdf() {
-    const restored = [];
-    document.querySelectorAll('#items-body tr').forEach(function (tr) {
-        const sizeCell = tr.querySelector('td:first-child');
-        if (!sizeCell) return;
-
-        const sel = sizeCell.querySelector('select');
-        const customInput = sizeCell.querySelector('input[type="text"]');
-
-        let displayText = '';
-        if (customInput && customInput.value.trim()) {
-            displayText = customInput.value.trim();
-        } else if (sel) {
-            const opt = sel.options[sel.selectedIndex];
-            displayText = (opt && opt.value && opt.value !== '' && opt.value !== '__custom__')
-                ? opt.text : '\u2014';
-        }
-
-        const span = document.createElement('span');
-        span.className = 'print-size-text';
-        span.textContent = displayText;
-        span.style.cssText = 'font-weight:600;font-size:0.9rem;color:var(--ink);';
-        sizeCell.insertBefore(span, sizeCell.firstChild);
-
-        if (sel) sel.style.setProperty('display', 'none', 'important');
-        if (customInput) customInput.style.setProperty('display', 'none', 'important');
-
-        restored.push({ sel: sel, span: span, input: customInput });
-    });
-
-    document.body.classList.add('pdf-exporting');
-
-    return function restoreInvoiceAfterPdf() {
-        document.body.classList.remove('pdf-exporting');
-        restored.forEach(function (r) {
-            r.span.remove();
-            if (r.sel) r.sel.style.removeProperty('display');
-            if (r.input) r.input.style.removeProperty('display');
-        });
-    };
-}
-
 function blobToBase64(/** @type {Blob} */ blob) {
     return new Promise(function (resolve, reject) {
         const reader = new FileReader();
@@ -364,22 +338,58 @@ async function saveInvoicePdf(/** @type {Blob} */ pdfBlob, /** @type {string} */
 // Override the print-only downloadPDF with the save-and-download version
 downloadPDF = async function () {
     const filename = getInvoiceFilename();
-    const restoreInvoice = prepareInvoiceForPdf();
     const button = /** @type {HTMLButtonElement} */ (document.getElementById('btn-download-pdf'));
     const originalButtonText = button ? button.textContent : '';
 
     if (!window.html2pdf) {
-        restoreInvoice();
         alert('PDF generator failed to load. Please check your internet connection and try again.');
         return;
     }
+
+    let cloneContainer = null;
+    const loadingOverlay = document.getElementById('pdf-loading-overlay');
 
     try {
         if (button) {
             button.disabled = true;
             button.textContent = 'Saving...';
         }
-        setStatus('Saving invoice to Supabase...');
+        if (loadingOverlay) loadingOverlay.classList.add('active');
+        setStatus('Generating PDF layout...');
+
+        // 1. Populate the hidden DOM template with current data
+        populatePrintTemplate();
+        const originalTemplate = document.getElementById('invoice-print-template');
+        
+        // 2. Deep clone the template so we can manipulate it without breaking the original
+        const clone = originalTemplate.cloneNode(true);
+        
+        // 3. Create a wrapper container to isolate it from the main UI
+        cloneContainer = document.createElement('div');
+        
+        // Force the container to be in the normal flow, but hidden BEHIND everything else.
+        // It must have a positive bounding box for html2canvas to render it.
+        Object.assign(cloneContainer.style, {
+            position: 'absolute',
+            top: '0',
+            left: '0',
+            width: '794px',
+            zIndex: '-9999',
+            backgroundColor: '#ffffff',
+            display: 'block',
+            opacity: '1'
+        });
+        
+        // 4. Force the clone itself to be visibly drawn (overriding the stylesheet display: none)
+        clone.style.display = 'block';
+        clone.style.margin = '0';
+        
+        // 5. Add to document so it receives a real layout context from the browser engine
+        cloneContainer.appendChild(clone);
+        document.body.appendChild(cloneContainer);
+
+        // 6. Yield to browser to let it physically paint the new DOM nodes before capture
+        await new Promise(resolve => setTimeout(resolve, 150));
 
         const options = {
             margin: 0,
@@ -390,21 +400,38 @@ downloadPDF = async function () {
             pagebreak: { mode: ['css', 'legacy'] }
         };
 
+        setStatus('Saving invoice to Supabase...');
+
+        // 7. Generate PDF from the explicitly visible clone
         const pdfBlob = await window.html2pdf()
             .set(options)
-            .from(document.body)
+            .from(clone)
             .outputPdf('blob');
 
-        await saveInvoicePdf(pdfBlob, filename);
+        // Always trigger the file download first so the user gets their PDF
         downloadBlob(pdfBlob, filename);
-        setStatus('Invoice saved. Refreshing history...');
-        await loadInvoiceHistory();
+
+        // Try to save to Supabase database/storage, but don't block the download if it fails
+        try {
+            await saveInvoicePdf(pdfBlob, filename);
+            setStatus('Invoice saved. Refreshing history...');
+            await loadInvoiceHistory();
+        } catch (supabaseError) {
+            console.warn('Could not save invoice to Supabase:', supabaseError);
+            setStatus('PDF downloaded. Invoice history save skipped (local dev/unconfigured).');
+        }
     } catch (error) {
-        console.error('Error saving invoice:', error);
-        setStatus('Could not save invoice. Please try again.');
-        alert(error.message || 'Failed to save invoice.');
+        console.error('Error generating PDF:', error);
+        setStatus('Could not generate PDF. Please try again.');
+        alert(error.message || 'Failed to generate PDF.');
     } finally {
-        restoreInvoice();
+        // Cleanup the temporary DOM clone
+        if (cloneContainer && cloneContainer.parentNode) {
+            cloneContainer.parentNode.removeChild(cloneContainer);
+        }
+
+        if (loadingOverlay) loadingOverlay.classList.remove('active');
+
         if (button) {
             button.disabled = false;
             button.textContent = originalButtonText || 'Save & Download PDF';
