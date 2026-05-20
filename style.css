@@ -1500,10 +1500,11 @@ footer {
 }
 
 .print-total-value {
-    text-align: right;
+    text-align: center;
     font-weight: 800;
     color: var(--wood-mid);
     font-size: 1.05rem;
+    white-space: nowrap;
     background: var(--cream-deep) !important;
 }
 
