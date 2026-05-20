@@ -468,7 +468,8 @@ main {
     }
 
     .history-status {
-        margin: 10px 0 12px;
+        margin: 16px 0 14px !important;
+        font-size: 0.85rem;
     }
 
     /* ── HISTORY TABLE → CARD LAYOUT on mobile ── */
