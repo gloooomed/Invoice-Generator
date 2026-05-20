@@ -467,6 +467,10 @@ main {
         text-align: center;
     }
 
+    .history-status {
+        margin: 10px 0 12px;
+    }
+
     /* ── HISTORY TABLE → CARD LAYOUT on mobile ── */
     .history-table {
         min-width: 0 !important;
